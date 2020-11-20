@@ -1,0 +1,458 @@
+\input{article-base.tex}
+
+\author{Eduardo Pagnussat Titello}
+\title{PEC00144 - Métodos Experimentais em Engenharia Civil}
+\subtitle{Trabalho 1}
+\date{Novembro de 2020}
+
+
+\begin{document}
+    
+\maketitle
+    
+    
+%%%\hypertarget{apresentauxe7uxe3o}{%
+%%%\section{Apresentação}\label{apresentauxe7uxe3o}}
+
+Este trabalho tem dois objetivos, logo está divido em duas partes:
+
+\hyperref[parte-i]{Parte I}: pesquisar por um número \(\Pi\) importante,
+escrever a matriz dimensional das grandezas envolvidas, confirmar a
+adimensionalidade usando a fórmula \(\vec{\alpha}\,{\bf D}\) e descrever
+exemplos de aplicação.
+
+\hyperref[parte-ii]{Parte II}: definir um problema de interesse, para o
+qual existe uma expressão \textbf{dimensional} conhecida e utilizada na
+prática; reformular a expressão em termos de números \(\Pi\) propostos;
+apresentar resultados na forma de gráficos relacionando estes números.
+
+    \hypertarget{parte-i}{%
+\section{Parte I}\label{parte-i}}
+
+O número de Strouhal (\(St\)) é um importante adimensional da mecânica
+dos fluídos que descreve oscilações no escoamento. Conforme White
+(2017), mesmo escoamentos que aparentam estar perfeitamente em regime
+permanente apresentam padrões de oscilação que variam conforme o número
+de Reynolds (\(Re\), considerado por muitos o mais importante
+adimensional da mecânica dos fluídos).
+
+\(St\) relaciona a frequência de desprendimento de vortices (\(f\)), a
+dimensão característica (\(L\)) e a velocidade do escoamento (\(v\))
+através de:
+
+\begin{equation}
+St=\frac{fL}{v}
+\end{equation}
+
+onde para esferas e cilindros \(L\) é seu diâmetro.
+
+    Fazendo uso da metologia adotada por Rocha (2020), a matriz dimensional
+\(\bf D\) do problema é:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando módulos}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}
+\PY{o}{\PYZpc{}}\PY{k}{config} InlineBackend.figure\PYZus{}format = \PYZsq{}svg\PYZsq{} \PYZsh{} Muda backend do jupyter para SVG ;)
+\PY{k+kn}{import} \PY{n+nn}{jupyter2latex} \PY{k}{as} \PY{n+nn}{j2l} \PY{c+c1}{\PYZsh{} Uma maneira que encontrei para tabelas ficarem ok (github.com/dutitello/Jupyter2Latex)}
+
+\PY{c+c1}{\PYZsh{} Importando todas grandezas}
+\PY{n}{DimData} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}excel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../resources/DimData.xlsx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+                         \PY{n}{index\PYZus{}col}  \PY{o}{=}  \PY{l+m+mi}{0}\PY{p}{,}
+                         \PY{n}{sheet\PYZus{}name} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DimData}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Filtrando apenas as grandezas envolvídas no problema:}
+\PY{n}{DMat} \PY{o}{=} \PY{n}{DimData}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{v}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{DMat}\PY{p}{,} \PY{n}{caption}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Matriz D}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[h!]
+    \centering
+    \caption{Matriz D}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &  L &  M &  T \\
+\midrule
+f &  0 &  0 & -1 \\
+L &  1 &  0 &  0 \\
+v &  1 &  0 & -1 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Que adotando o sistema internacional de unidades leva à: \begin{align*}
+[ f ] &= {\rm m}^{0}{\rm kg}^{0}{\rm s}^{-1} = 1/{\rm s} = {\rm Hz} \\
+[ L ] &= {\rm m}^{1}{\rm kg}^{0}{\rm s}^{0} = {\rm m}  \\
+[ v ] &= {\rm m}^{1}{\rm kg}^{0}{\rm s}^{-1} = {\rm m/s} \\
+\end{align*}
+
+Logo a matriz \(\bf D\) está correta.
+
+Reescrevendo \(St\) tem-se:
+
+\begin{equation}
+\Pi_{St}=f^1L^1v^{-1}
+\end{equation}
+
+logo: \begin{equation}
+\vec\alpha_{St}=[1, 1, -1]
+\end{equation}
+
+Com isso o produto \(\vec\alpha_{St}.\bf D\) é:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{alpha\PYZus{}St} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{n}{prod} \PY{o}{=} \PY{n}{alpha\PYZus{}St}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{DMat}\PY{o}{.}\PY{n}{values}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{prod}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[0 0 0]
+    \end{Verbatim}
+
+    Logo a expressão de \(St\) apresentada é adimensional.
+
+    Fenômenos relacionados ao número de Strouhal são o cantar de cabos com o
+vento, o galope de linhas de ancoragem submarinas e as vibrações de
+construções esbeltas com o vento; sendo que o nome Strouhal faz menção
+ao físico V. Strouhal, que estudou o cantar a fios excitados pelo vento
+em 1878. Esses fenomenos ocorrem pelo desprendimento periódico de
+vórtices, denominados vórtices de van Kármán, em menção ao físico T. von
+Kármán que os explicou teóricamente em 1912 (White, 2017).
+
+Os vórtices de van Kármán podem levar estruturas à ressonancia caso sua
+frequência de desprendimento se aproxime da frequencia de vibração livre
+da estrutura, como ocorrido na ponte Tacoma em 1940. Em esferas, por
+exemplo, os vórtices são desprendidos quando \(St \approx 0,21\) no
+intervalo \(10^2<Re<10^7\) (White, 2017).
+
+No Brasil, a norma NBR 6123:1988 - Forças devidas ao vento em
+edificações, no anexo H, fornece valores para \(St\) com base em \(Re\)
+e no tipo da seção da edificação, de forma a permitir a obtenção de uma
+velocidade crítica na qual a frequência de desprendimento de um par de
+vórtices coincide com uma das frequências naturais de vibração da
+estrutura. Através desse anexo os projetistas podem então, mesmo que de
+forma aproximada, avaliar o fenomeno de desprendimento de vórtices em
+edificações.
+
+    \hypertarget{parte-ii}{%
+\section{Parte II}\label{parte-ii}}
+
+    A expressão adotada, apresentada em \ref{expviga}, determina o momento
+resistente de uma viga em concreto armado, com armadura simples de
+tração, no domínio II ou III (armadura escoando, conforme norma
+brasileira). Essa é obtida através do equilibrio de esforços internos da
+seção considerando o diagrama retangular de tensões para o concreto.
+
+\begin{equation}
+M = A_s f_y \Bigg( d - \frac{A_s f_y}{2 b f_c}\Bigg)
+\label{expviga}
+\end{equation}
+
+onde seus paramêtros são:
+
+\begin{itemize}
+\tightlist
+\item
+  \(M\): momento resistente da seção;
+\item
+  \(A_s\): área de armadura tracionada;
+\item
+  \(f_y\): tensão de escoamento da armadura;
+\item
+  \(d\): altura útil (do topo da viga ao centro da armadura);
+\item
+  \(b\): largura da viga;
+\item
+  \(f_c\): resistência à compressão do concreto.
+\end{itemize}
+
+    A matriz dimensional \(\bf{D}\) é então:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{DMatCA} \PY{o}{=} \PY{n}{DimData}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{A}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\textsigma}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\textsigma}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{DMatCA}\PY{p}{,} \PY{n}{caption}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Matriz D \PYZhy{} Viga CA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[h!]
+    \centering
+    \caption{Matriz D - Viga CA}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &  L &  M &  T \\
+\midrule
+M &  2 &  1 & -2 \\
+A &  2 &  0 &  0 \\
+\textsigma & -1 &  1 & -2 \\
+L &  1 &  0 &  0 \\
+L &  1 &  0 &  0 \\
+\textsigma & -1 &  1 & -2 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Conforme Rocha (2020) e Carneiro (1993), o teorema dos \(\Pi\)'s de
+Vaschy-Buckingham pode produzir \(r=n-k\) números \(\Pi\)'s não
+dimensionais, onde \(n\) é o número de variáveis do problema (incluíndo
+a variável independente) e \(k\) é o número de grandezas fundamentais
+envolvidas (\(L,M,T\)).
+
+Para o problema em questão tem-se \(n=6\) e \(k=3\), logo, 3 números
+\(\Pi\)'s podem ser produzidos, onde cada \(\Pi_j\) é um monomio formado
+pelas \(n\) variáveis elevadas aos expoentes \(\alpha_{j,n_i}\). A
+adimensionalidade de \(\Pi_j\) é garantida montando um vetor
+\(\vec\alpha_j\), contendo os expoentes de cada uma das \(n\) variáveis,
+e garantindo que \(\vec\alpha_j . {\bf D } = \vec0\). Assim, \(\Pi_j\) e
+\(\alpha_j\) são genéricamente dados por:
+
+\begin{equation}
+\Pi_j = M^{\alpha_{j,M}} A_s^{\alpha_{j,A_s}} f_y^{\alpha_{j,f_y}} d^{\alpha_{j,d}} b^{\alpha_{j,b}} f_c^{\alpha_{j,f_c}}
+\label{Pij}
+\end{equation}
+
+\begin{equation}
+\vec\alpha_j = [{\alpha_{j,M}}, {\alpha_{j,A_s}}, {\alpha_{j,f_y}}, {\alpha_{j,d}}, {\alpha_{j,b}}, {\alpha_{j,f_c}}]
+\label{alphaj}
+\end{equation}
+
+    Adotando \(\Pi_1\) como a razão entre as áreas de armadura e concreto
+tem-se:
+
+\begin{equation}
+\Pi_1 = \frac{A_s}{bd}
+\label{Pi1}
+\end{equation}
+
+\begin{equation}
+\vec\alpha_1 = [0, 1, 0, -1, -1, 0]
+\label{alpha1}
+\end{equation}
+
+que tem sua adimensionalidade provada por:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{alpha\PYZus{}Pi1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\PY{n}{prod\PYZus{}Pi1}  \PY{o}{=} \PY{n}{alpha\PYZus{}Pi1}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{DMatCA}\PY{o}{.}\PY{n}{values}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{prod\PYZus{}Pi1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[0 0 0]
+    \end{Verbatim}
+
+    Para \(\Pi_2\) é adotada a razão entre a tensão de escoamento da
+armadura e resistência à compressão do concreto:
+
+\begin{equation}
+\Pi_2 = \frac{f_y}{f_c}
+\label{Pi2}
+\end{equation}
+
+\begin{equation}
+\vec\alpha_2 = [0, 0, 1, 0, 0, -1]
+\label{alpha2}
+\end{equation}
+
+que tem sua adimensionalidade provada por:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{alpha\PYZus{}Pi2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{n}{prod\PYZus{}Pi2}  \PY{o}{=} \PY{n}{alpha\PYZus{}Pi2}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{DMatCA}\PY{o}{.}\PY{n}{values}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{prod\PYZus{}Pi2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[0 0 0]
+    \end{Verbatim}
+
+    Adotando em \(\Pi_3\) o momento \(M\) como numerador, diferentes
+formulações podem ser obtidas como:
+
+\begin{equation}
+\Pi_3 = \frac{M}{A_s f_y d}
+\label{Pi3a}
+\end{equation}
+
+\begin{equation}
+\Pi_3 = \frac{M}{bd^2f_c}
+\label{Pi3}
+\end{equation}
+
+Adotando a segunda formulação, de forma a eliminar de \(\Pi_3\) a
+dependencia de \(A_s\), o vetor \(\vec\alpha_3\) é:
+
+\begin{equation}
+\vec\alpha_3 = [1, 0, 0, -2, -1, -1]
+\label{alpha3}
+\end{equation}
+
+que tem sua adimensionalidade provada por:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{alpha\PYZus{}Pi3} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{n}{prod\PYZus{}Pi3}  \PY{o}{=} \PY{n}{alpha\PYZus{}Pi3}\PY{o}{.}\PY{n}{dot}\PY{p}{(}\PY{n}{DMatCA}\PY{o}{.}\PY{n}{values}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{prod\PYZus{}Pi3}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[0 0 0]
+    \end{Verbatim}
+
+    Dessa forma \ref{expviga} pode ser reescrita em função dos adimensionais
+\(\Pi_1\), \(\Pi_2\) e \(\Pi_3\):
+
+\begin{equation}
+\Pi_3=\Pi_1\Pi_2-\frac{1}{2}(\Pi_1\Pi_2)^2
+\label{F}
+\end{equation}
+
+onde observa-se que um único adimensional \(\Pi_{12} = \Pi_1\Pi_2\)
+poderia ser empregado, porém este não será adotado.
+
+    Em posse de \ref{F} e de \(\Pi_1\), \(\Pi_2\) e \(\Pi_3\), curvas que
+relacionam tais variáveis podem ser traçadas. Visto que \(\Pi_1=A_s/bd\)
+é a taxa de armadura tracionada da viga (\(\rho\)), cada valor desse
+paramêtro, que pela norma brasileira é limitado a 4\%, será plotado em
+uma curva diferente.
+
+Adotando \(\Pi_2\) como eixo horizontal e \(\Pi_3\) como eixo vertical,
+considerando \(5 \le \Pi_2 \le 55\), o que engloba combinações de concretos
+das classes C20 à C90 e aços CA-50 e CA-60:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Basedo em Pi1 gera curvas de Pi2 e Pi3 no intervalo [5,55]}
+\PY{k}{def} \PY{n+nf}{graf}\PY{p}{(}\PY{n}{Pi1}\PY{p}{)}\PY{p}{:}
+    \PY{n}{Pi2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{55}\PY{p}{,} \PY{l+m+mi}{51}\PY{p}{)}
+    \PY{n}{Pi3} \PY{o}{=} \PY{n}{Pi1}\PY{o}{*}\PY{n}{Pi2} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}\PY{o}{/}\PY{l+m+mi}{2}\PY{o}{*}\PY{p}{(}\PY{n}{Pi1}\PY{o}{*}\PY{n}{Pi2}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{Pi2}\PY{p}{,} \PY{n}{Pi3}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s1}{rho=}\PY{l+s+si}{\PYZob{}}\PY{n}{Pi1}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    
+    
+\PY{c+c1}{\PYZsh{} Configura plot}
+\PY{c+c1}{\PYZsh{} inline ou qt }
+\PY{c+c1}{\PYZsh{}\PYZpc{}matplotlib inline}
+\PY{n}{matplotlib}\PY{o}{.}\PY{n}{rcParams}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{font.size}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{12}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{axis}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{55}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mf}{0.55}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s1}{frac }\PY{l+s+si}{\PYZob{}M\PYZcb{}}\PY{l+s+s1}{\PYZob{}}\PY{l+s+s1}{b d\PYZca{}2 f\PYZus{}c\PYZcb{}\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}f\PYZus{}y/f\PYZus{}c\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{15}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plota linhas para cada rho}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.005}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.010}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.020}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.030}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.040}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Legenda}
+\PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{ncol}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{bbox\PYZus{}to\PYZus{}anchor}\PY{o}{=}\PY{p}{(}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trab1_files/trab1_21_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Através de \ref{expviga} e forçando valores para \(\Pi_1\) (\(\rho\)),
+combinações das variáveis de entrada devem produzir pontos sobre as
+linhas da figura anterior, dessa forma:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Pega valores cálcula Mu e Pi\PYZsq{}s}
+\PY{k}{def} \PY{n+nf}{PontosValid}\PY{p}{(}\PY{n}{As}\PY{p}{,} \PY{n}{fy}\PY{p}{,} \PY{n}{d}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{fc}\PY{p}{)}\PY{p}{:}
+    \PY{n}{Mu} \PY{o}{=} \PY{n}{As}\PY{o}{*}\PY{n}{fy}\PY{o}{*}\PY{p}{(}\PY{n}{d}\PY{o}{\PYZhy{}}\PY{n}{As}\PY{o}{*}\PY{n}{fy}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{b}\PY{o}{*}\PY{n}{fc}\PY{p}{)}\PY{p}{)}
+    \PY{n}{Pi1} \PY{o}{=} \PY{n}{As}\PY{o}{/}\PY{p}{(}\PY{n}{b}\PY{o}{*}\PY{n}{d}\PY{p}{)}
+    \PY{n}{Pi2} \PY{o}{=} \PY{n}{fy}\PY{o}{/}\PY{n}{fc}
+    \PY{n}{Pi3} \PY{o}{=} \PY{n}{Mu}\PY{o}{/}\PY{p}{(}\PY{n}{b}\PY{o}{*}\PY{n}{d}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{fc}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Cria pontos em grafico do tipo scatter}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{Pi2}\PY{p}{,} \PY{n}{Pi3}\PY{p}{,} \PY{n}{s}\PY{o}{=}\PY{l+m+mi}{60}\PY{p}{,} \PY{n}{marker}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Valid.: \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s1}{rho=}\PY{l+s+si}{\PYZob{}}\PY{n}{Pi1}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    
+    
+\PY{c+c1}{\PYZsh{} Configura plot}
+\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{axis}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{55}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mf}{0.55}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s1}{frac }\PY{l+s+si}{\PYZob{}M\PYZcb{}}\PY{l+s+s1}{\PYZob{}}\PY{l+s+s1}{b d\PYZca{}2 f\PYZus{}c\PYZcb{}\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}f\PYZus{}y/f\PYZus{}c\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{15}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Linhas}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.005}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.010}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.020}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.030}\PY{p}{)}
+\PY{n}{graf}\PY{p}{(}\PY{l+m+mf}{0.040}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Pontos \PYZhy{} Um para cada linha anterior, assim repete as cores}
+\PY{n}{PontosValid}\PY{p}{(}\PY{n}{As}\PY{o}{=}\PY{l+m+mf}{0.005}\PY{o}{*}\PY{l+m+mi}{15}\PY{o}{*}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{fy}\PY{o}{=}\PY{l+m+mi}{50}\PY{o}{/}\PY{l+m+mf}{1.15}\PY{p}{,} \PY{n}{d}\PY{o}{=}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{b}\PY{o}{=}\PY{l+m+mi}{15}\PY{p}{,} \PY{n}{fc}\PY{o}{=}\PY{l+m+mi}{2}\PY{o}{*}\PY{l+m+mf}{0.85}\PY{o}{/}\PY{l+m+mf}{1.4}\PY{p}{)}
+\PY{n}{PontosValid}\PY{p}{(}\PY{n}{As}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{o}{*}\PY{l+m+mi}{15}\PY{o}{*}\PY{l+m+mi}{60}\PY{p}{,} \PY{n}{fy}\PY{o}{=}\PY{l+m+mi}{50}\PY{o}{/}\PY{l+m+mf}{1.15}\PY{p}{,} \PY{n}{d}\PY{o}{=}\PY{l+m+mi}{60}\PY{p}{,} \PY{n}{b}\PY{o}{=}\PY{l+m+mi}{15}\PY{p}{,} \PY{n}{fc}\PY{o}{=}\PY{l+m+mi}{4}\PY{o}{*}\PY{l+m+mf}{0.85}\PY{o}{/}\PY{l+m+mf}{1.4}\PY{p}{)}
+\PY{n}{PontosValid}\PY{p}{(}\PY{n}{As}\PY{o}{=}\PY{l+m+mf}{0.02}\PY{o}{*}\PY{l+m+mi}{10}\PY{o}{*}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{fy}\PY{o}{=}\PY{l+m+mi}{40}\PY{o}{/}\PY{l+m+mf}{1.15}\PY{p}{,} \PY{n}{d}\PY{o}{=}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{b}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{fc}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+\PY{n}{PontosValid}\PY{p}{(}\PY{n}{As}\PY{o}{=}\PY{l+m+mf}{0.03}\PY{o}{*}\PY{l+m+mi}{15}\PY{o}{*}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{fy}\PY{o}{=}\PY{l+m+mi}{50}\PY{o}{/}\PY{l+m+mf}{1.15}\PY{p}{,} \PY{n}{d}\PY{o}{=}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{b}\PY{o}{=}\PY{l+m+mi}{15}\PY{p}{,} \PY{n}{fc}\PY{o}{=}\PY{l+m+mi}{3}\PY{o}{*}\PY{l+m+mf}{1.14}\PY{p}{)}
+\PY{n}{PontosValid}\PY{p}{(}\PY{n}{As}\PY{o}{=}\PY{l+m+mf}{0.04}\PY{o}{*}\PY{l+m+mi}{15}\PY{o}{*}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{fy}\PY{o}{=}\PY{l+m+mi}{60}\PY{o}{/}\PY{l+m+mf}{1.15}\PY{p}{,} \PY{n}{d}\PY{o}{=}\PY{l+m+mi}{36}\PY{p}{,} \PY{n}{b}\PY{o}{=}\PY{l+m+mi}{15}\PY{p}{,} \PY{n}{fc}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Legenda}
+\PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{ncol}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{bbox\PYZus{}to\PYZus{}anchor}\PY{o}{=}\PY{p}{(}\PY{l+m+mf}{1.0}\PY{p}{,}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trab1_files/trab1_23_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Assim, pode-se concluir que a adimensionalização e figura gerada estão
+corretas. Cabe observar que sua aplicação prática requer a verificação
+do domínio da peça pela norma vigente, visto que a expressão
+\ref{expviga} considera o escoamento da armadura.
+
+    \hypertarget{referuxeancias-bibliogruxe1ficas}{%
+\section{Referências Bibliográficas}\label{referuxeancias-bibliogruxe1ficas}}
+
+Carneiro, F. L. {\bf Análise dimensional e teoria da semelhança e dos modelos
+físicos}. Rio de Janeiro: Editora UFRJ. 1993.
+
+Rocha, M. M. {\bf PEC00144 - Experimental Methods in Civil Engineering}. 2020.
+Disponível em: \url{https://github.com/mmaiarocha/PEC00144}.
+
+White, F. M. {\bf Fluid Mechanics}. 8th ed. McGraw-Hill Education. 2017.
+
+
+    
+    
+    
+\end{document}
