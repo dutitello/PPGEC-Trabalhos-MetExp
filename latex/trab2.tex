@@ -1,0 +1,504 @@
+\input{article-base.tex}
+
+\author{Eduardo Pagnussat Titello}
+\title{PEC00144 - Métodos Experimentais em Engenharia Civil}
+\subtitle{Trabalho 2}
+\date{Novembro de 2020}
+
+
+\begin{document}
+
+\maketitle
+
+
+Este trabalho tem por objetivo: no tema de interesse, adotar um problema
+imaginário de formulação explícita, com 2 ou mais parâmetros
+dimensionais. Desenhar, formular e definir uma nova escala para o
+problema, fazendo uma análise de mudança de escala de forma a poder
+construir tal modelo.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando e configurando módulos}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{c+c1}{\PYZsh{}import matplotlib}
+\PY{o}{\PYZpc{}}\PY{k}{config} InlineBackend.figure\PYZus{}format = \PYZsq{}svg\PYZsq{} \PYZsh{} Muda backend do jupyter para SVG ;)
+\PY{k+kn}{import} \PY{n+nn}{jupyter2latex} \PY{k}{as} \PY{n+nn}{j2l} \PY{c+c1}{\PYZsh{} Uma maneira que encontrei para tabelas ficarem ok (github.com/dutitello/Jupyter2Latex)}
+\PY{k+kn}{from} \PY{n+nn}{math} \PY{k+kn}{import} \PY{n}{pi}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{apresentauxe7uxe3o-do-problema}{%
+\section{Apresentação do
+problema}\label{apresentauxe7uxe3o-do-problema}}
+
+O problema adotado consiste na avaliação das duas primeiras frequências
+naturais de vibração de um poste em concreto armado, considerando seu
+comportamento como elástico linear. O poste adotado tem comprimento
+efetivo \(L= 12m\), seção constante de diâmetro externo \(d_e = 50cm\) e
+espessura \(e=6 cm\), resultando em um diâmetro interno \(d_i = 38cm\),
+conforme a figura:
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{Poste.png}
+\caption{Poste}
+\end{figure}
+
+    Conforme Rocha (2020a), as frequências naturais de vibração de uma viga
+engastada livre (modelo adotado para o poste) podem ser obtidas por
+\ref{eq:wn}:
+
+\begin{equation}
+f_n = \frac{1}{2\pi} {\Big( \frac{\alpha_n}{L} \Big)}^2 \sqrt{\frac{EI}{\mu_L}}
+\label{eq:wn}
+\end{equation}
+
+onde, para as duas primeiras frequências naturais, \(\alpha_1=1.88\) e
+\(\alpha_2=4.69\), respectivamente, e \(\mu_L\) é a massa linear da
+estrutura (massa/comprimento).
+
+A área da seção transversal circular vazada \(A\) e seu momento de
+inércia \(I\) são dados por:
+
+\begin{equation}
+A = \frac{\pi}{4}\big(d_e^2 - d_i^2 \big)
+\label{eq:Ac}
+\end{equation}
+
+\begin{equation}
+I = \frac{\pi}{64}\big(d_e^4 - d_i^4 \big)
+\label{eq:Ic}
+\end{equation}
+
+    Adotando o subíndice ``\(_c\)'' para representar a estrutura real em
+concreto, sendo empregado concreto da classe C25, o módulo de
+elasticidade do material é \(E_c=28 GPa\), enquanto sua densidade é
+aproximadamente \(\rho_c=2500 kg/m^3\). As propriedades da estrutura
+original são então:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{L\PYZus{}c}   \PY{o}{=} \PY{l+m+mf}{12.0}   \PY{c+c1}{\PYZsh{} m}
+\PY{n}{de\PYZus{}c}  \PY{o}{=} \PY{l+m+mf}{0.50}   \PY{c+c1}{\PYZsh{} m}
+\PY{n}{di\PYZus{}c}  \PY{o}{=} \PY{l+m+mf}{0.38}   \PY{c+c1}{\PYZsh{} m}
+\PY{n}{E\PYZus{}c}   \PY{o}{=} \PY{l+m+mf}{28.0E9} \PY{c+c1}{\PYZsh{} N/m\PYZca{}2}
+\PY{n}{rho\PYZus{}c} \PY{o}{=} \PY{l+m+mi}{2500}   \PY{c+c1}{\PYZsh{} kg/m\PYZca{}3}
+
+\PY{n}{A\PYZus{}c}   \PY{o}{=} \PY{n}{pi}\PY{o}{/}\PY{l+m+mi}{4}\PY{o}{*}\PY{p}{(}\PY{n}{de\PYZus{}c}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{\PYZhy{}} \PY{n}{di\PYZus{}c}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}  \PY{c+c1}{\PYZsh{} m\PYZca{}2}
+\PY{n}{I\PYZus{}c}   \PY{o}{=} \PY{n}{pi}\PY{o}{/}\PY{l+m+mi}{64}\PY{o}{*}\PY{p}{(}\PY{n}{de\PYZus{}c}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{4} \PY{o}{\PYZhy{}} \PY{n}{di\PYZus{}c}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{4}\PY{p}{)} \PY{c+c1}{\PYZsh{} m\PYZca{}4}
+
+\PY{n}{EI\PYZus{}c}  \PY{o}{=} \PY{n}{E\PYZus{}c}\PY{o}{*}\PY{n}{I\PYZus{}c}   \PY{c+c1}{\PYZsh{} Nm\PYZca{}2}
+\PY{n}{muL\PYZus{}c} \PY{o}{=} \PY{n}{A\PYZus{}c}\PY{o}{*}\PY{n}{rho\PYZus{}c} \PY{c+c1}{\PYZsh{} kg/m}
+\PY{n}{m\PYZus{}c}   \PY{o}{=} \PY{n}{muL\PYZus{}c}\PY{o}{*}\PY{n}{L\PYZus{}c} \PY{c+c1}{\PYZsh{} kg}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+s1}{Propriedades da estrutura:}
+\PY{l+s+s1}{    Área da seção             A\PYZus{}c = }\PY{l+s+si}{\PYZob{}}\PY{n}{A\PYZus{}c}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ m\PYZca{}2}
+\PY{l+s+s1}{    Momento de Inércia        I\PYZus{}c = }\PY{l+s+si}{\PYZob{}}\PY{n}{I\PYZus{}c}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ m\PYZca{}4 }
+\PY{l+s+s1}{    Rigidez EI             (EI)\PYZus{}c = }\PY{l+s+si}{\PYZob{}}\PY{n}{EI\PYZus{}c}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ N.m\PYZca{}2}
+\PY{l+s+s1}{    Massa linear             μL\PYZus{}c = }\PY{l+s+si}{\PYZob{}}\PY{n}{muL\PYZus{}c}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ kg/m}
+\PY{l+s+s1}{    Massa total               m\PYZus{}c = }\PY{l+s+si}{\PYZob{}}\PY{n}{m\PYZus{}c}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ kg}
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Propriedades da estrutura:
+    Área da seção             A\_c = 0.083 m\^{}2
+    Momento de Inércia        I\_c = 2.044E-03 m\^{}4
+    Rigidez EI             (EI)\_c = 5.724E+07 N.m\^{}2
+    Massa linear             μL\_c = 207.35 kg/m
+    Massa total               m\_c = 2488.14 kg
+
+    \end{Verbatim}
+
+    \hypertarget{definiuxe7uxe3o-do-modelo-reduzido}{%
+\section{Definição do modelo
+reduzido}\label{definiuxe7uxe3o-do-modelo-reduzido}}
+
+Conforme a expressão \ref{eq:wn}, as frequências naturais da estrutura
+são dependentes do seu comprimento \(L\), da sua rigidez à flexão \(EI\)
+e da sua massa linear \(\mu_L\). Em relação às dimensões, o fator de
+escala adotado é 1:25. Adotando um modelo reduzido em alumínio, com
+módulo de elasticidade \(E_m=70GPa\) e densidade \(\rho_m=2700kg/m^3\),
+os demais fatores de escala adotados são relativos à rigidez \(EI\) e a
+massa linear \(\mu_L\).
+
+Os fatores de escala \(EI\) e \(\mu_L\) devem considerar perfis de
+alumínio comercialmente viáveis, dessa forma, é adotado o perfil
+cilindrico cheio VR-002 da Aluita (Aluita, 2019), de diâmetro externo
+\(d_{e,m}=6.00mm\). O perfil cilíndrico cheio é adotado de forma a
+reduzir as frequências naturais do modelo reduzido, visto que esse
+possuí razão \(EI/\mu_L\) menor que os perfis tubulares da marca (TR-002
+e TR-004). Os fatores de escala são então obtidos relacionando as
+propriedades da seção do modelo à seção do poste:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Perfil tubular TR\PYZhy{}004}
+\PY{c+c1}{\PYZsh{}de\PYZus{}m  = 12.70/1000 \PYZsh{} m}
+\PY{c+c1}{\PYZsh{}di\PYZus{}m  = 10.22/1000 \PYZsh{} m}
+\PY{c+c1}{\PYZsh{} Perfil tubular TR\PYZhy{}002}
+\PY{c+c1}{\PYZsh{}de\PYZus{}m  = 9.53/1000  \PYZsh{} m}
+\PY{c+c1}{\PYZsh{}di\PYZus{}m  = 6.35/1000  \PYZsh{} m}
+\PY{c+c1}{\PYZsh{} Perfil cilíndrico VR\PYZhy{}002}
+\PY{n}{de\PYZus{}m}  \PY{o}{=} \PY{l+m+mi}{6}\PY{o}{/}\PY{l+m+mi}{1000}     \PY{c+c1}{\PYZsh{} m}
+\PY{n}{di\PYZus{}m}  \PY{o}{=} \PY{l+m+mi}{0}\PY{o}{/}\PY{l+m+mi}{1000}     \PY{c+c1}{\PYZsh{} m}
+\PY{n}{E\PYZus{}m}   \PY{o}{=} \PY{l+m+mf}{70.0E9}     \PY{c+c1}{\PYZsh{} N/m\PYZca{}2}
+\PY{n}{rho\PYZus{}m} \PY{o}{=} \PY{l+m+mi}{2700}       \PY{c+c1}{\PYZsh{} kg/m\PYZca{}3}
+
+\PY{n}{A\PYZus{}m}   \PY{o}{=} \PY{n}{pi}\PY{o}{/}\PY{l+m+mi}{4}\PY{o}{*}\PY{p}{(}\PY{n}{de\PYZus{}m}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{\PYZhy{}} \PY{n}{di\PYZus{}m}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}  \PY{c+c1}{\PYZsh{} m\PYZca{}2}
+\PY{n}{I\PYZus{}m}   \PY{o}{=} \PY{n}{pi}\PY{o}{/}\PY{l+m+mi}{64}\PY{o}{*}\PY{p}{(}\PY{n}{de\PYZus{}m}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{4} \PY{o}{\PYZhy{}} \PY{n}{di\PYZus{}m}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{4}\PY{p}{)} \PY{c+c1}{\PYZsh{} m\PYZca{}4}
+\PY{n}{EI\PYZus{}m}  \PY{o}{=} \PY{n}{E\PYZus{}m}\PY{o}{*}\PY{n}{I\PYZus{}m}    \PY{c+c1}{\PYZsh{} Nm\PYZca{}2}
+\PY{n}{muL\PYZus{}m} \PY{o}{=} \PY{n}{A\PYZus{}m}\PY{o}{*}\PY{n}{rho\PYZus{}m}  \PY{c+c1}{\PYZsh{} kg/m}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+s1}{Propriedades do modelo reduzido:}
+\PY{l+s+s1}{    Área da seção             A\PYZus{}m = }\PY{l+s+si}{\PYZob{}}\PY{n}{A\PYZus{}m}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ m\PYZca{}2}
+\PY{l+s+s1}{    Momento de Inércia        I\PYZus{}m = }\PY{l+s+si}{\PYZob{}}\PY{n}{I\PYZus{}m}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ m\PYZca{}4 }
+\PY{l+s+s1}{    Rigidez EI             (EI)\PYZus{}m = }\PY{l+s+si}{\PYZob{}}\PY{n}{EI\PYZus{}m}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ N.m\PYZca{}2}
+\PY{l+s+s1}{    Massa linear             μL\PYZus{}m = }\PY{l+s+si}{\PYZob{}}\PY{n}{muL\PYZus{}m}\PY{l+s+si}{:}\PY{l+s+s1}{.2E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ kg/m}
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Propriedades do modelo reduzido:
+    Área da seção             A\_m = 2.827E-05 m\^{}2
+    Momento de Inércia        I\_m = 6.362E-11 m\^{}4
+    Rigidez EI             (EI)\_m = 4.453E+00 N.m\^{}2
+    Massa linear             μL\_m = 7.63E-02 kg/m
+
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{escala\PYZus{}L}   \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{l+m+mi}{25}
+\PY{n}{escala\PYZus{}muL} \PY{o}{=} \PY{n}{muL\PYZus{}m}\PY{o}{/}\PY{n}{muL\PYZus{}c}
+\PY{n}{escala\PYZus{}EI}  \PY{o}{=} \PY{n}{EI\PYZus{}m}\PY{o}{/}\PY{n}{EI\PYZus{}c}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+s1}{Fatores de escala impostos:}
+\PY{l+s+s1}{    Comprimento      L = 1:}\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{escala\PYZus{}L}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ }
+\PY{l+s+s1}{    Massa linear    μL = 1:}\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{escala\PYZus{}muL}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ }
+\PY{l+s+s1}{    Rigidez         EI = 1:}\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{escala\PYZus{}EI}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Fatores de escala impostos:
+    Comprimento      L = 1:2.500E+01
+    Massa linear    μL = 1:2.716E+03
+    Rigidez         EI = 1:1.285E+07
+
+    \end{Verbatim}
+
+    \hypertarget{anuxe1lise-do-modelo-reduzido}{%
+\section{Análise do modelo
+reduzido}\label{anuxe1lise-do-modelo-reduzido}}
+
+A interpretação dos resultados do modelo reduzido requer que sua
+resposta seja escalada de forma à corresponder à estrutura real. Para
+obtenção de tal fator de escala, a base fundamental do sistema de
+unidades deve corresponder aos dimensionais das escalas impostas, dessa
+forma o sistema \(L, M, T\) (comprimento, massa, tempo) é inicialmente
+transformado em um sistema de base \(L, \mu_L, EI\) (comprimento, massa
+linear, rigidez EI), denominado no código como ABC. Fazendo uso da
+metodologia implementada em Rocha (2020b):
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando DimData }
+\PY{n}{DimData} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}excel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../resources/DimData.xlsx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+                         \PY{n}{index\PYZus{}col}  \PY{o}{=}  \PY{l+m+mi}{0}\PY{p}{,}
+                         \PY{n}{sheet\PYZus{}name} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DimData}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+
+\PY{c+c1}{\PYZsh{} Unidades fundamentais originais }
+\PY{n}{LMT} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} Novas unidades fundamentais}
+\PY{n}{ABC} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{μL}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{EI}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} 
+
+\PY{c+c1}{\PYZsh{} Importa matriz dimensional de ABC na base LMT}
+\PY{n}{base} \PY{o}{=} \PY{n}{DimData}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{ABC}\PY{p}{,} \PY{n}{LMT}\PY{p}{]}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{base}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L, μL, EI na base L, M, T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Inverte base de unidades de LMT para ABC}
+\PY{n}{base\PYZus{}i} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{inv}\PY{p}{(}\PY{n}{base}\PY{p}{)}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{n}{LMT}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{n}{ABC}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{base\PYZus{}i}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L, M, T na base L, μL, EI}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[h!]
+    \centering
+    \caption{L, μL, EI na base L, M, T}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &  L &  M &  T \\
+\midrule
+L  &  1 &  0 &  0 \\
+μL & -1 &  1 &  0 \\
+EI &  3 &  1 & -2 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    
+    \begin{table}[h!]
+    \centering
+    \caption{L, M, T na base L, μL, EI}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &    L &   μL &   EI \\
+\midrule
+L &  1.0 &  0.0 &  0.0 \\
+M &  1.0 &  1.0 &  0.0 \\
+T &  2.0 &  0.5 & -0.5 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Conforme \ref{eq:wn}, os parâmetros dimensionais relacionados as
+frequências naturais de vibração \(f\) são \(L\), \(\mu_L\) e \(EI\),
+sendo que \(L\), \(\mu_L\) e \(EI\) são impostos, enquanto \(f\) é
+mantido livre. Formando a matriz dimensional \(\bf D\) do problema no
+sistema ABC, considerando ainda, a titulo de verificação, a massa \(m\),
+temos que:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{par} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{μL}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{EI}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{npar} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{par}\PY{p}{)}
+
+\PY{n}{DMat\PYZus{}LMT} \PY{o}{=} \PY{n}{DimData}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{par}\PY{p}{,} \PY{n}{LMT}\PY{p}{]}
+\PY{n}{DMat\PYZus{}ABC} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{matmul}\PY{p}{(}\PY{n}{DMat\PYZus{}LMT}\PY{p}{,} \PY{n}{base\PYZus{}i}\PY{p}{)}
+\PY{n}{DMat\PYZus{}ABC}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{n+nb}{zip}\PY{p}{(}\PY{n}{LMT}\PY{p}{,} \PY{n}{ABC}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)} \PY{c+c1}{\PYZsh{} Renomeia colunas para nova base}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{DMat\PYZus{}ABC}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Matriz D na base L, μL, EI}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[h!]
+    \centering
+    \caption{Matriz D na base L, μL, EI}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &    L &   μL &   EI \\
+\midrule
+f  & -2.0 & -0.5 &  0.5 \\
+L  &  1.0 &  0.0 &  0.0 \\
+μL &  0.0 &  1.0 &  0.0 \\
+EI &  0.0 &  0.0 &  1.0 \\
+m  &  1.0 &  1.0 &  0.0 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Através da matriz dimensional \(\bf D\) no sistema ABC os parâmetros de
+escala podem ser calculados:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Ok, não é \PYZdq{}bonito\PYZdq{} isso de ficar fazendo escala=f(escala)...}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{escala\PYZus{}L}\PY{p}{,} \PY{n}{escala\PYZus{}muL}\PY{p}{,} \PY{n}{escala\PYZus{}EI}\PY{p}{]}\PY{p}{)}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{tile}\PY{p}{(}\PY{n}{escalas}\PY{p}{,} \PY{p}{(}\PY{n}{npar}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{prod}\PY{p}{(}\PY{n}{escalas}\PY{o}{*}\PY{o}{*}\PY{n}{DMat\PYZus{}ABC}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{escalas}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{1/λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{1}\PY{o}{/}\PY{n}{escalas}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{n}{par}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{escalas}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Fatores de escala}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[h!]
+    \centering
+    \caption{Fatores de escala}
+    {\begin{tabular}{lrr}
+\toprule
+{} &             λ &           1/λ \\
+\midrule
+f  &  9.084917e+00 &  1.100726e-01 \\
+L  &  4.000000e-02 &  2.500000e+01 \\
+μL &  3.681818e-04 &  2.716049e+03 \\
+EI &  7.779366e-08 &  1.285452e+07 \\
+m  &  1.472727e-05 &  6.790123e+04 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Observa-se então que as escalas impostas estão de acordo, e, que as
+frequências naturais de vibração do modelo reduzido são 9.08 vezes
+maiores que as da estrutura, enquanto sua massa é 1/67901 da massa do
+poste original.
+
+    \hypertarget{validauxe7uxe3o-do-modelo-reduzido}{%
+\section{Validação do modelo
+reduzido}\label{validauxe7uxe3o-do-modelo-reduzido}}
+
+A validade do modelo em escala pode ser verificada pela expressão
+\ref{eq:wn}. Para isso o comprimento \(L_m\) do modelo reduzido deve ser
+determinado, enquanto as demais propriedades foram determinadas
+anteriormente.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{L\PYZus{}m} \PY{o}{=} \PY{n}{L\PYZus{}c} \PY{o}{*} \PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Comprimento do modelo reduzido  L\PYZus{}m = }\PY{l+s+si}{\PYZob{}}\PY{n}{L\PYZus{}m}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Comprimento do modelo reduzido  L\_m = 0.480 m
+    \end{Verbatim}
+
+    Aplicando os parâmetros do modelo reduzido na função analítica e a
+correspondente correção na escala de frequências:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{fn}\PY{p}{(}\PY{n}{L}\PY{p}{,} \PY{n}{EI}\PY{p}{,} \PY{n}{muL}\PY{p}{)}\PY{p}{:}
+    \PY{n}{fns} \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{pi}\PY{p}{)} \PY{o}{*} \PY{l+m+mi}{1}\PY{o}{/}\PY{n}{L}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{p}{(}\PY{n}{EI}\PY{o}{/}\PY{n}{muL}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mf}{0.5}
+    \PY{n}{fn1} \PY{o}{=} \PY{l+m+mf}{1.88}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{fns}
+    \PY{n}{fn2} \PY{o}{=} \PY{l+m+mf}{4.69}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{fns}
+    \PY{k}{return} \PY{n}{fn1}\PY{p}{,} \PY{n}{fn2}
+
+\PY{n}{fn\PYZus{}m} \PY{o}{=} \PY{n}{fn}\PY{p}{(}\PY{n}{L\PYZus{}m}\PY{p}{,} \PY{n}{EI\PYZus{}m}\PY{p}{,} \PY{n}{muL\PYZus{}m}\PY{p}{)}
+\PY{n}{fn\PYZus{}m\PYZus{}esc} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{fn\PYZus{}m}\PY{p}{)} \PY{o}{*} \PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{1/λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+s1}{Frequências naturais de vibração do modelo reduzido:}
+\PY{l+s+s1}{    f\PYZus{}1 = }\PY{l+s+si}{\PYZob{}}\PY{n}{fn\PYZus{}m}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{    f\PYZus{}2 = }\PY{l+s+si}{\PYZob{}}\PY{n}{fn\PYZus{}m}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+
+\PY{l+s+s1}{Frequências naturais de vibração do poste:}
+\PY{l+s+s1}{    (obtidos através do fator de escala 1:}\PY{l+s+si}{\PYZob{}}\PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{1/λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ ou }\PY{l+s+si}{\PYZob{}}\PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{:1)}
+\PY{l+s+s1}{    f\PYZus{}1 = }\PY{l+s+si}{\PYZob{}}\PY{n}{fn\PYZus{}m\PYZus{}esc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{    f\PYZus{}2 = }\PY{l+s+si}{\PYZob{}}\PY{n}{fn\PYZus{}m\PYZus{}esc}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Frequências naturais de vibração do modelo reduzido:
+    f\_1 = 18.647 Hz
+    f\_2 = 116.049 Hz
+
+Frequências naturais de vibração do poste:
+    (obtidos através do fator de escala 1:0.110 ou 9.085:1)
+    f\_1 = 2.053 Hz
+    f\_2 = 12.774 Hz
+
+    \end{Verbatim}
+
+    Aplicando agora os parâmetros da estrutura real na função analítica:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{fn\PYZus{}c} \PY{o}{=} \PY{n}{fn}\PY{p}{(}\PY{n}{L\PYZus{}c}\PY{p}{,} \PY{n}{EI\PYZus{}c}\PY{p}{,} \PY{n}{muL\PYZus{}c}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+s1}{Frequências naturais de vibração do poste:}
+\PY{l+s+s1}{    f\PYZus{}1 = }\PY{l+s+si}{\PYZob{}}\PY{n}{fn\PYZus{}c}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{    f\PYZus{}2 = }\PY{l+s+si}{\PYZob{}}\PY{n}{fn\PYZus{}c}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Frequências naturais de vibração do poste:
+    f\_1 = 2.053 Hz
+    f\_2 = 12.774 Hz
+
+    \end{Verbatim}
+
+    Logo o modelo em escala representa corretamente as frequências do poste.
+
+Visto que escala de massa linear \(\mu_L\) foi imposta, a massa do
+modelo reduzido é a massa de um trecho de tamanho \(L_m\) do perfil de
+alumínio adotado, aplicando sobre essa a escala de massa calculada
+\(\lambda_m\), a massa do poste real deve então ser encontrada,
+conforme:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{m\PYZus{}m}     \PY{o}{=} \PY{n}{muL\PYZus{}m} \PY{o}{*} \PY{n}{L\PYZus{}m}
+\PY{n}{m\PYZus{}m\PYZus{}esc} \PY{o}{=} \PY{n}{m\PYZus{}m} \PY{o}{*} \PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{1/λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+s1}{Comparação das massas:}
+\PY{l+s+s1}{    Massa do poste                          m\PYZus{}c = }\PY{l+s+si}{\PYZob{}}\PY{n}{m\PYZus{}c}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ kg}
+\PY{l+s+s1}{    Massa do modelo reduzido                m\PYZus{}m = }\PY{l+s+si}{\PYZob{}}\PY{n}{m\PYZus{}m}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ kg}
+\PY{l+s+s1}{    Massa escalada do modelo reduzido   m\PYZus{}m\PYZus{}esc = }\PY{l+s+si}{\PYZob{}}\PY{n}{m\PYZus{}m\PYZus{}esc}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ kg}
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Comparação das massas:
+    Massa do poste                          m\_c = 2488.141 kg
+    Massa do modelo reduzido                m\_m = 0.037 kg
+    Massa escalada do modelo reduzido   m\_m\_esc = 2488.141 kg
+
+    \end{Verbatim}
+
+    Logo o modelo em escala está corretamente definido.
+
+    \hypertarget{referuxeancias-bibliogruxe1ficas}{%
+\section{Referências
+Bibliográficas}\label{referuxeancias-bibliogruxe1ficas}}
+
+Aluita - Alumínio Porto Alegre Ltda. \textbf{Catálogo de Perfis
+2019/2020}, 2020. Disponível em:
+\url{https://aluita.com.br/wp-content/uploads/2020/01/Cat\%C3\%A1logo-Perfil-2019.pdf}.
+
+Rocha, M. M. \textbf{PEC00025 - Introduction to Vibration Theory},
+2020a. Disponível em: \url{https://github.com/mmaiarocha/PEC00025}.
+
+Rocha, M. M. \textbf{PEC00144 - Experimental Methods in Civil
+Engineering}, 2020b. Disponível em:
+\url{https://github.com/mmaiarocha/PEC00144}.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
