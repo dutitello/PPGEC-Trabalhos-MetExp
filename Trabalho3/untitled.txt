@@ -1,0 +1,36 @@
+fig1 = plt.figure(1, figsize=(12,3))
+
+def pdfs(mu, std, rv, titulo):
+    pl  = plt.subplot(1,4,1)
+    plX = np.linspace(mu-4*std, mu+4*std)
+    
+    
+    f1a = plt.plot(X, U.pdf(X),'b')
+    plt.axis([0, 14, 0, 0.4])
+    plt.title('Módulo de elasticidade')
+    plt.grid(True)
+    
+    
+    
+
+pl  = plt.subplot(2,1,1)
+plt.title('Modelo reduzido - Primeira frquência')
+plt.ylabel('$\mu_{f1}$')
+plt.xscale('log')
+plt.xlim(minp,N)
+plt.grid(True)
+roll.mean()['fn1_m'].plot(label='$\mu_{f1}$')
+pl.fill_between(IC1.index, means['fn1_m']-stds['fn1_m'], means['fn1_m']+stds['fn1_m'], color='b', alpha=0.1, label='$\mu_{f1} \pm \sigma_{f1}$')
+pl.fill_between(IC1.index, means['fn1_m']-2*stds['fn1_m'], means['fn1_m']+2*stds['fn1_m'], color='g', alpha=0.1, label='$\mu_{f1} \pm 2 \sigma_{f1}$')
+plt.legend()
+
+
+pl  = plt.subplot(2,1,2)
+plt.title('Modelo reduzido - Segunda frquência')
+plt.ylabel('$\mu_{f2}$')
+plt.xscale('log')
+plt.xlim(minp,N)
+plt.grid(True)
+roll.mean()['fn2_m'].plot(label='$\mu_{f2}$')
+pl.fill_between(IC1.index, means['fn2_m']-stds['fn2_m'], means['fn2_m']+stds['fn2_m'], color='b', alpha=0.1, label='$\mu_{f2} \pm \sigma_{f2}$')
+plt.legend()
