@@ -1,0 +1,677 @@
+\input{article-base.tex}
+
+\author{Eduardo Pagnussat Titello}
+\title{PEC00144 - Métodos Experimentais em Engenharia Civil}
+\subtitle{Trabalho 3A}
+\date{Dezembro de 2020}
+
+
+\begin{document}
+	
+	\maketitle
+
+
+Este trabalho tem por objetivo: avaliar através de simulações de Monte
+Carlo a propagação de erro no modelo empregado no trabalho anterior,
+adotando variáveis Gaussianas.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando e configurando módulos}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{o}{\PYZpc{}}\PY{k}{config} InlineBackend.figure\PYZus{}format = \PYZsq{}svg\PYZsq{} \PYZsh{} Muda backend do jupyter para SVG ;)
+\PY{k+kn}{import} \PY{n+nn}{jupyter2latex} \PY{k}{as} \PY{n+nn}{j2l} \PY{c+c1}{\PYZsh{} Uma maneira que encontrei para tabelas ficarem ok (github.com/dutitello/Jupyter2Latex)}
+\PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k+kn}{import} \PY{n}{pi}
+\PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{as} \PY{n+nn}{st}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{recapitulauxe7uxe3o-do-problema-adotado}{%
+\section{Recapitulação do problema
+adotado}\label{recapitulauxe7uxe3o-do-problema-adotado}}
+
+O problema adotado consiste na avaliação das duas primeiras frequências
+naturais de vibração de um poste em concreto armado, considerando seu
+comportamento como elástico linear. O poste tem comprimento efetivo
+\(L=12m\), seção constante de diâmetro externo \(d_e=50cm\) e espessura
+\(e=6cm\).
+
+O modelo reduzido empregado para avaliação do problema consiste em um
+cilindro de alumínio de diâmetro \(d_e=6mm\), massa linear
+\(\rho=2700kg/m^3\) e módulo de elastícidade \(E=70GPa\). Adotando como
+escala de comprimento \(1:25\) (modelo reduzido tem comprimento
+\(L=48cm\)) e através das propriedades do perfil empregado, os três
+fatores de escala impostos são:
+
+\begin{itemize}
+\item
+  Comprimento - \(L = 1:25\)
+\item
+  Massa linear - \(\mu_L = 1:2716\)
+\item
+  Rígidez à flexão - \(EI = 1:1.285\times10^7\)
+\end{itemize}
+
+Através da análise dimensional realizada anteriormente, o fator de
+escala de frequências obtido foi \(1:0.110\) ou \(\lambda_f = 9.085\).
+
+    As frequências naturais de vibração do modelo são dadas por \ref{eq:wn}:
+
+\begin{equation}
+f_n = \frac{1}{2\pi} {\Big( \frac{\alpha_n}{L} \Big)}^2 \sqrt{\frac{EI}{\mu_L}}
+\label{eq:wn}
+\end{equation}
+
+onde, para as duas primeiras frequências naturais, \(\alpha_1=1.88\) e
+\(\alpha_2=4.69\), respectivamente. A área da seção transversal circular
+\(A\) e seu momento de inércia \(I\) são dados por:
+
+\begin{equation}
+A = \frac{\pi d_e^2}{4}
+\label{eq:Ac}
+\end{equation}
+
+\begin{equation}
+I = \frac{\pi d_e^4}{64}
+\label{eq:Ic}
+\end{equation}
+
+    \hypertarget{propriedades-estatuxedsticas-do-modelo-reduzido}{%
+\section{Propriedades estatísticas do modelo
+reduzido}\label{propriedades-estatuxedsticas-do-modelo-reduzido}}
+
+Desprezando possíveis erros de matemáticos de modelagem, conforme
+\ref{eq:wn}, \ref{eq:Ac} e \ref{eq:Ic}, os parâmetros que podem
+introduzir erros no modelo reduzido são \(E\), \(d_e\), \(\rho\) e
+\(L\). Dado o grande controle tecnológico existente hoje nas industrias,
+para as propriedades \(E\), \(d_e\) e \(\rho\) são adotados coeficientes
+de variação de \(5\%\), enquanto, para \(L\), visto que os perfis devem
+ser cortados pelo usuário final, é fixado um desvio padrão de \(5mm\).
+Assim, as variáveis aleatórias e suas propriedades são:
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule
+\begin{minipage}[b]{0.21\columnwidth}\raggedright
+Var. aleatória\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\raggedright
+Símbolo\strut
+\end{minipage} & \begin{minipage}[b]{0.13\columnwidth}\raggedright
+Média (\(\mu\))\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Coef. de Variação (\(CV\))\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Desvio Padrão (\(\sigma\))\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.21\columnwidth}\raggedright
+Módulo de elasticidade\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\(E\)\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+70 GPa\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+5\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+3.5 GPa\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.21\columnwidth}\raggedright
+Diâmetro externo\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\(d_e\)\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+6 mm\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+5\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+0.3 mm\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.21\columnwidth}\raggedright
+Massa específica\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\(\rho\)\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+2700 kg/m³\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+5\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+135 kg/m³\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.21\columnwidth}\raggedright
+Comprimento\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\raggedright
+\(L\)\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+48 cm\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+-\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+0.5 cm\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Com isso as distribuições podem ser construídas no SciPy.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Módulo de elasticidade em N/m²}
+\PY{n}{mu\PYZus{}E}   \PY{o}{=} \PY{l+m+mf}{70E9} 
+\PY{n}{std\PYZus{}E}  \PY{o}{=} \PY{l+m+mf}{0.05}\PY{o}{*}\PY{n}{mu\PYZus{}E}
+\PY{n}{rv\PYZus{}E}   \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{mu\PYZus{}E}\PY{p}{,} \PY{n}{std\PYZus{}E}\PY{p}{)}    
+
+\PY{c+c1}{\PYZsh{} Diametro do perfil em m}
+\PY{n}{mu\PYZus{}de}  \PY{o}{=} \PY{l+m+mi}{6}\PY{o}{/}\PY{l+m+mi}{1000}
+\PY{n}{std\PYZus{}de} \PY{o}{=} \PY{l+m+mf}{0.05}\PY{o}{*}\PY{n}{mu\PYZus{}de}
+\PY{n}{rv\PYZus{}de}  \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{mu\PYZus{}de}\PY{p}{,} \PY{n}{std\PYZus{}de}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Massa específica em kg/m³}
+\PY{n}{mu\PYZus{}rho}  \PY{o}{=} \PY{l+m+mi}{2700}
+\PY{n}{std\PYZus{}rho} \PY{o}{=} \PY{l+m+mf}{0.05}\PY{o}{*}\PY{n}{mu\PYZus{}rho}
+\PY{n}{rv\PYZus{}rho}  \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{mu\PYZus{}rho}\PY{p}{,} \PY{n}{std\PYZus{}rho}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Comprimento em m}
+\PY{n}{mu\PYZus{}L}    \PY{o}{=} \PY{l+m+mi}{48}\PY{o}{/}\PY{l+m+mi}{100}
+\PY{n}{std\PYZus{}L}   \PY{o}{=} \PY{l+m+mf}{0.5}\PY{o}{/}\PY{l+m+mi}{100}
+\PY{n}{rv\PYZus{}L}    \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{mu\PYZus{}L}\PY{p}{,} \PY{n}{std\PYZus{}L}\PY{p}{)} 
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{funuxe7uxe3o-para-avaliauxe7uxe3o-do-modelo}{%
+\section{Função para avaliação do
+modelo}\label{funuxe7uxe3o-para-avaliauxe7uxe3o-do-modelo}}
+
+Para aplicação do método de simulação por Monte Carlo a equação
+\ref{eq:wn} é introduzida em uma função dependente apenas das variáveis
+aleatórias de entrada consideradas:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{frequencias}\PY{p}{(}\PY{n}{E}\PY{p}{,} \PY{n}{de}\PY{p}{,} \PY{n}{rho}\PY{p}{,} \PY{n}{L}\PY{p}{)}\PY{p}{:}
+    \PY{n}{A}   \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{l+m+mi}{4}\PY{o}{*}\PY{n}{pi}\PY{o}{*}\PY{n}{de}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} 
+    \PY{n}{I}   \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{l+m+mi}{64}\PY{o}{*}\PY{n}{pi}\PY{o}{*}\PY{n}{de}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{4}
+    \PY{n}{muL} \PY{o}{=} \PY{n}{A}\PY{o}{*}\PY{n}{rho}
+    
+    \PY{c+c1}{\PYZsh{} Frequencias naturais do modelo}
+    \PY{n}{fns} \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{pi}\PY{p}{)} \PY{o}{*} \PY{l+m+mi}{1}\PY{o}{/}\PY{n}{L}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{p}{(}\PY{n}{E}\PY{o}{*}\PY{n}{I}\PY{o}{/}\PY{n}{muL}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mf}{0.5}
+    \PY{n}{fn1\PYZus{}m} \PY{o}{=} \PY{l+m+mf}{1.88}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{fns}
+    \PY{n}{fn2\PYZus{}m} \PY{o}{=} \PY{l+m+mf}{4.69}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{fns}
+    
+    \PY{c+c1}{\PYZsh{} Frequencias naturais da estrutura}
+    \PY{n}{fn1\PYZus{}e} \PY{o}{=} \PY{n}{fn1\PYZus{}m} \PY{o}{*} \PY{l+m+mf}{1.100726e\PYZhy{}01}
+    \PY{n}{fn2\PYZus{}e} \PY{o}{=} \PY{n}{fn2\PYZus{}m} \PY{o}{*} \PY{l+m+mf}{1.100726e\PYZhy{}01}
+    
+    \PY{k}{return} \PY{n}{fn1\PYZus{}m}\PY{p}{,} \PY{n}{fn2\PYZus{}m}\PY{p}{,} \PY{n}{fn1\PYZus{}e}\PY{p}{,} \PY{n}{fn2\PYZus{}e}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Aplicando sobre a função os valores médios devem ser obtidas as
+frequências observadas no trabalho anterior:
+
+\begin{itemize}
+\item
+  Para o modelo reduzido: 18.647 Hz e 116.049 Hz
+\item
+  Para a estrutura real: 2.053 Hz e 12.774 Hz
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{freqs} \PY{o}{=} \PY{n}{frequencias}\PY{p}{(}\PY{n}{mu\PYZus{}E}\PY{p}{,} \PY{n}{mu\PYZus{}de}\PY{p}{,} \PY{n}{mu\PYZus{}rho}\PY{p}{,} \PY{n}{mu\PYZus{}L}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{freqs}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+(18.647119431070642, 116.04909000616033, 2.0525369182884665, 12.773825064612083)
+    \end{Verbatim}
+
+    Ok, a função retorna os valores esperados.
+
+    \hypertarget{avaliauxe7uxe3o-da-propagauxe7uxe3o-de-erro}{%
+\section{Avaliação da propagação de
+erro}\label{avaliauxe7uxe3o-da-propagauxe7uxe3o-de-erro}}
+
+Para avaliação da propagação de erro, dado o baixo custo computacional
+do problema, são realizadas \(5 \times 10^6\) simulações e os resultados
+são avaliados cumulativamente, de forma a observar a convergência do
+processo.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Controles}
+\PY{n}{N}    \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{l+m+mf}{5E6}\PY{p}{)} \PY{c+c1}{\PYZsh{} Total de simulações}
+\PY{n}{minp} \PY{o}{=} \PY{l+m+mi}{10}       \PY{c+c1}{\PYZsh{} Mínimo de pontos para cálcular média e desvio padrão}
+\PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{seed}\PY{p}{(}\PY{l+m+mi}{666}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Construção de DataFrame para armazenar os dados}
+\PY{n}{dados} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Geração de dados aleatórios}
+\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{E}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}   \PY{o}{=} \PY{n}{rv\PYZus{}E}\PY{o}{.}\PY{n}{rvs}\PY{p}{(}\PY{n}{N}\PY{p}{)}
+\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{de}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}  \PY{o}{=} \PY{n}{rv\PYZus{}de}\PY{o}{.}\PY{n}{rvs}\PY{p}{(}\PY{n}{N}\PY{p}{)}
+\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rho}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{rv\PYZus{}rho}\PY{o}{.}\PY{n}{rvs}\PY{p}{(}\PY{n}{N}\PY{p}{)}
+\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}   \PY{o}{=} \PY{n}{rv\PYZus{}L}\PY{o}{.}\PY{n}{rvs}\PY{p}{(}\PY{n}{N}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Cálculo das frequencias naturais}
+\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}e}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}e}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{frequencias}\PY{p}{(}\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{E}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{de}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rho}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Uma descrição geral dos dados é apresentada nas Tabelas \ref{tab:descE}
+e \ref{tab:descf}, onde as médias e o desvios padrões dos paramêtros de
+entrada convergem para os valores fornecidos, enquanto as médias das
+frequências naturais apresentam pequenas diferenças em relação aos
+valores já conhecidos.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{pd}\PY{o}{.}\PY{n}{set\PYZus{}option}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{display.float\PYZus{}format}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{x}\PY{l+s+si}{:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{desc\PYZus{}geral} \PY{o}{=} \PY{n}{dados}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{std}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{min}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{max}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{desc\PYZus{}geral}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{E}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{de}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rho}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Descrição geral dos dados de entrada}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tab:descE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{desc\PYZus{}geral}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}e}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}e}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Descrição geral das frequências naturais}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tab:descf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[H]
+    \centering
+    \caption{Descrição geral dos dados de entrada}
+    {\begin{tabular}{lrrrr}
+\toprule
+{} &         E &        de &       rho &         L \\
+\midrule
+mean & 7.000E+10 & 6.000E-03 & 2.700E+03 & 4.800E-01 \\
+std  & 3.500E+09 & 2.999E-04 & 1.350E+02 & 4.999E-03 \\
+min  & 5.228E+10 & 4.568E-03 & 1.985E+03 & 4.558E-01 \\
+max  & 8.725E+10 & 7.508E-03 & 3.394E+03 & 5.057E-01 \\
+\bottomrule
+\end{tabular}
+}
+    \label{tab:descE}
+    \end{table}
+    
+
+    
+    
+    \begin{table}[H]
+    \centering
+    \caption{Descrição geral das frequências naturais}
+    {\begin{tabular}{lrrrr}
+\toprule
+{} &     fn1\_m &     fn2\_m &     fn1\_e &     fn2\_e \\
+\midrule
+mean & 1.867E+01 & 1.162E+02 & 2.055E+00 & 1.279E+01 \\
+std  & 1.209E+00 & 7.524E+00 & 1.331E-01 & 8.282E-01 \\
+min  & 1.306E+01 & 8.127E+01 & 1.437E+00 & 8.946E+00 \\
+max  & 2.573E+01 & 1.601E+02 & 2.832E+00 & 1.763E+01 \\
+\bottomrule
+\end{tabular}
+}
+    \label{tab:descf}
+    \end{table}
+    
+
+    
+    Nos resultados pode ainda ser observada a linearidade da transformação
+de escala do modelo, onde:
+
+\begin{equation}
+\mu_{f,Est. Real} = \mu_{f, Mod. Red.} \times 1/\lambda_f
+\end{equation}
+
+\begin{equation}
+\sigma_{f, Est. Real} = \sigma_{f, Mod. Red.} \times 1/\lambda_f
+\end{equation}
+
+    Dessa forma, as análises a seguir são realizas apenas em relação ao
+modelo reduzido, objeto principal do estudo.
+
+Através da análise estatística cumulativa dos resultados obtidos pelo
+método de Monte Carlo a convergência do processo com o aumento do número
+de simulações pode ser determinada:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{roll}  \PY{o}{=} \PY{n}{dados}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{rolling}\PY{p}{(}\PY{n}{N}\PY{p}{,} \PY{n}{min\PYZus{}periods}\PY{o}{=}\PY{n}{minp}\PY{p}{)}
+\PY{n}{stds}  \PY{o}{=} \PY{n}{roll}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
+\PY{n}{means} \PY{o}{=} \PY{n}{roll}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{figMeans} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{pl}  \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{means}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Primeira frequência}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{mu\PYZus{}}\PY{l+s+si}{\PYZob{}f1\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xscale}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{minp}\PY{p}{,}\PY{n}{N}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{pl}  \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{means}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Segunda frequência}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{mu\PYZus{}}\PY{l+s+si}{\PYZob{}f2\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xscale}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{minp}\PY{p}{,}\PY{n}{N}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{pl}  \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{)}
+\PY{n}{stds}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Simulações}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{sigma\PYZus{}}\PY{l+s+si}{\PYZob{}f1\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xscale}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{minp}\PY{p}{,}\PY{n}{N}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{pl}  \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}
+\PY{n}{stds}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Simulações}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{sigma\PYZus{}}\PY{l+s+si}{\PYZob{}f2\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xscale}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{minp}\PY{p}{,}\PY{n}{N}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trab3a_files/trab3a_18_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Conforme a figura, as médias e desvios padrões das frequências de
+vibração do modelo reduzido estabilizam com cerca de \(2\times 10^5\)
+simulações, sendo esse valor observado para diferentes sementes
+geradoras de números aleatórios. Dada a convergência do processo os
+valores apresentados anteriormente, na descrição dos resultados, são
+adotados, dessa forma:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{mean\PYZus{}f1} \PY{o}{=} \PY{n}{desc\PYZus{}geral}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{mean\PYZus{}f2} \PY{o}{=} \PY{n}{desc\PYZus{}geral}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{std\PYZus{}f1}  \PY{o}{=} \PY{n}{desc\PYZus{}geral}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{std}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{std\PYZus{}f2}  \PY{o}{=} \PY{n}{desc\PYZus{}geral}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{std}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{l+s+s1}{Considerando as incertezas existentes:}
+\PY{l+s+s1}{ \PYZhy{} A primeira frequência de vibração do modelo reduzido é }\PY{l+s+si}{\PYZob{}f1:.2f\PYZcb{}}\PY{l+s+s1}{ Hz com um desvio padrão de }\PY{l+s+si}{\PYZob{}f1s:.2f\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{ \PYZhy{} A segunda frequência de vibração do modelo reduzido é }\PY{l+s+si}{\PYZob{}f2:.2f\PYZcb{}}\PY{l+s+s1}{ Hz com um desvio padrão de }\PY{l+s+si}{\PYZob{}f2s:.2f\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{f1}\PY{o}{=}\PY{n}{mean\PYZus{}f1}\PY{p}{,} \PY{n}{f2}\PY{o}{=}\PY{n}{mean\PYZus{}f2}\PY{p}{,} \PY{n}{f1s}\PY{o}{=}\PY{n}{std\PYZus{}f1}\PY{p}{,} \PY{n}{f2s}\PY{o}{=}\PY{n}{std\PYZus{}f2}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Considerando as incertezas existentes:
+ - A primeira frequência de vibração do modelo reduzido é 18.67 Hz com um desvio
+padrão de 1.21 Hz
+ - A segunda frequência de vibração do modelo reduzido é 116.16 Hz com um desvio
+padrão de 7.52 Hz
+
+    \end{Verbatim}
+
+    Como a média e o desvio padrão dos resultados são conhecidos os
+histogramas dos resultados podem ser comparados às distribuições normais
+formadas por tais parâmetros, avaliando diferentes números de
+simulações:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{rv\PYZus{}f1} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{mean\PYZus{}f1}\PY{p}{,} \PY{n}{std\PYZus{}f1}\PY{p}{)}
+\PY{n}{rv\PYZus{}f2} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{p}{(}\PY{n}{mean\PYZus{}f2}\PY{p}{,} \PY{n}{std\PYZus{}f2}\PY{p}{)}
+
+\PY{n}{k} \PY{o}{=} \PY{l+m+mi}{4}
+\PY{n}{x1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{mean\PYZus{}f1} \PY{o}{\PYZhy{}} \PY{n}{k}\PY{o}{*}\PY{n}{std\PYZus{}f1}\PY{p}{,} \PY{n}{mean\PYZus{}f1} \PY{o}{+} \PY{n}{k}\PY{o}{*}\PY{n}{std\PYZus{}f1}\PY{p}{,} \PY{l+m+mi}{500}\PY{p}{)}
+\PY{n}{x2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{mean\PYZus{}f2} \PY{o}{\PYZhy{}} \PY{n}{k}\PY{o}{*}\PY{n}{std\PYZus{}f2}\PY{p}{,} \PY{n}{mean\PYZus{}f2} \PY{o}{+} \PY{n}{k}\PY{o}{*}\PY{n}{std\PYZus{}f2}\PY{p}{,} \PY{l+m+mi}{500}\PY{p}{)}
+
+\PY{n}{Nhs} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,} \PY{l+m+mi}{1000}\PY{p}{,} \PY{l+m+mi}{10000}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{l+m+mf}{1e6}\PY{p}{)}\PY{p}{]}
+
+\PY{n}{figHists} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+\PY{n}{figHists}\PY{o}{.}\PY{n}{suptitle}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Primeira Frequência Natural}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{Nh} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{:}
+    \PY{n}{pl} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{o}{*}\PY{p}{(}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Densidade de Probabilidade}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{rv\PYZus{}f1}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x1}\PY{p}{)}\PY{p}{)}
+    \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{n}{Nh}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hist}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{N=}\PY{l+s+si}{\PYZob{}}\PY{n}{Nh}\PY{l+s+si}{:}\PY{l+s+s1}{.1E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{k+kc}{None}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{==}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frquência em Hz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{upper left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+
+    \PY{n}{pl} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{o}{*}\PY{p}{(}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Densidade de Probabilidade Acumulada}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{rv\PYZus{}f1}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{x1}\PY{p}{)}\PY{p}{)}
+    \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn1\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{n}{Nh}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hist}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{cumulative}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{k+kc}{None}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{==}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frquência em Hz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trab3a_files/trab3a_22_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{figHists} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+\PY{n}{figHists}\PY{o}{.}\PY{n}{suptitle}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Segunda Frequência Natural}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{Nh} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{:}
+    \PY{n}{pl} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{o}{*}\PY{p}{(}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Densidade de Probabilidade}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x2}\PY{p}{,} \PY{n}{rv\PYZus{}f2}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x2}\PY{p}{)}\PY{p}{)}
+    \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{n}{Nh}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hist}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{N=}\PY{l+s+si}{\PYZob{}}\PY{n}{Nh}\PY{l+s+si}{:}\PY{l+s+s1}{.1E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{k+kc}{None}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{==}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frquência em Hz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{upper left}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+
+    \PY{n}{pl} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{o}{*}\PY{p}{(}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{==}\PY{l+m+mi}{0}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Densidade de Probabilidade Acumulada}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x2}\PY{p}{,} \PY{n}{rv\PYZus{}f2}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{x2}\PY{p}{)}\PY{p}{)}
+    \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fn2\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{n}{Nh}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hist}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{cumulative}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{k+kc}{None}\PY{p}{)}
+    \PY{k}{if} \PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{o}{==}\PY{n+nb}{len}\PY{p}{(}\PY{n}{Nhs}\PY{p}{)}\PY{p}{:} \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frquência em Hz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trab3a_files/trab3a_23_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Conforme esperado, o aumento do número de simulações consideradas na
+construção dos histogramas melhorou a suavidade desses. Em relação à
+distribuição dos resultados, mesmo com uma função não-linear é observada
+boa aderência desses à distribuição normal.
+
+Sendo o erro propagado uma variável aleatória de distribuição normal,
+podem ser determinados intervalos de confiança das frequências do modelo
+reduzido, considerando erros bilaterais, por:
+
+\begin{equation}
+\mu_{fi} - k \sigma_{fi} \le f_i \le \mu_{fi} + k \sigma_{fi}
+\end{equation}
+
+onde \(k\) é obtido através do inverso da distribuição de probabilidade
+acumulada para um dado erro \(\varepsilon\) tal que:
+
+\begin{equation}
+k = -\Phi^{-1}(\varepsilon/2)
+\end{equation}
+
+Supondo erros bilaterais aceitáveis de 2.5\%, 5\%, 10\% e 50\% os
+limites obtidos são:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{IC}\PY{p}{(}\PY{n}{mean}\PY{p}{,} \PY{n}{std}\PY{p}{,} \PY{n}{err}\PY{p}{)}\PY{p}{:}
+    \PY{n}{k} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{o}{.}\PY{n}{ppf}\PY{p}{(}\PY{n}{err}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)} \PY{c+c1}{\PYZsh{} Bilateral}
+    \PY{k}{return} \PY{n}{mean}\PY{o}{\PYZhy{}}\PY{n}{k}\PY{o}{*}\PY{n}{std}\PY{p}{,} \PY{n}{mean}\PY{o}{+}\PY{n}{k}\PY{o}{*}\PY{n}{std}\PY{p}{,} \PY{n}{k}
+
+\PY{k}{def} \PY{n+nf}{printIC}\PY{p}{(}\PY{n}{err}\PY{p}{)}\PY{p}{:}
+    \PY{n}{f1min}\PY{p}{,} \PY{n}{f1max}\PY{p}{,} \PY{n}{k} \PY{o}{=} \PY{n}{IC}\PY{p}{(}\PY{n}{mean\PYZus{}f1}\PY{p}{,} \PY{n}{std\PYZus{}f1}\PY{p}{,} \PY{n}{err}\PY{p}{)}
+    \PY{n}{f2min}\PY{p}{,} \PY{n}{f2max}\PY{p}{,} \PY{n}{k} \PY{o}{=} \PY{n}{IC}\PY{p}{(}\PY{n}{mean\PYZus{}f2}\PY{p}{,} \PY{n}{std\PYZus{}f2}\PY{p}{,} \PY{n}{err}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{l+s+s1}{Com uma confiança de }\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{err}\PY{l+s+si}{:}\PY{l+s+s1}{.2\PYZpc{}}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{: (k=}\PY{l+s+si}{\PYZob{}}\PY{n}{k}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{)}
+\PY{l+s+s1}{    * }\PY{l+s+si}{\PYZob{}}\PY{n}{f1min}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz \PYZlt{}= f1 \PYZlt{}= }\PY{l+s+si}{\PYZob{}}\PY{n}{f1max}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{    * }\PY{l+s+si}{\PYZob{}}\PY{n}{f2min}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz \PYZlt{}= f2 \PYZlt{}= }\PY{l+s+si}{\PYZob{}}\PY{n}{f2max}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Hz}
+\PY{l+s+s1}{    }\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+    
+\PY{n}{printIC}\PY{p}{(}\PY{l+m+mf}{0.025}\PY{p}{)}
+\PY{n}{printIC}\PY{p}{(}\PY{l+m+mf}{0.050}\PY{p}{)}
+\PY{n}{printIC}\PY{p}{(}\PY{l+m+mf}{0.100}\PY{p}{)}
+\PY{n}{printIC}\PY{p}{(}\PY{l+m+mf}{0.500}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Com uma confiança de 97.50\%: (k=2.241)
+    * 15.96 Hz <= f1 <= 21.38 Hz
+    * 99.30 Hz <= f2 <= 133.03 Hz
+
+Com uma confiança de 95.00\%: (k=1.960)
+    * 16.30 Hz <= f1 <= 21.03 Hz
+    * 101.41 Hz <= f2 <= 130.91 Hz
+
+Com uma confiança de 90.00\%: (k=1.645)
+    * 16.68 Hz <= f1 <= 20.65 Hz
+    * 103.78 Hz <= f2 <= 128.54 Hz
+
+Com uma confiança de 50.00\%: (k=0.674)
+    * 17.85 Hz <= f1 <= 19.48 Hz
+    * 111.09 Hz <= f2 <= 121.24 Hz
+
+    \end{Verbatim}
+
+    Evidentemente, a aceitação de um erro maior reduz o tamanho do intervalo
+de frequências possíveis. Dos resultados apresentados acima, adotando a
+confiança de 95\%, ou probabilidade do valor estar fora do intervalo de
+5\%, as frequências do modelo estão nos intervalos:
+
+\[ 16.30 Hz \le f_1 \le 21.03 Hz \]
+
+\[ 101.41 Hz \le f_2 \le 130.91 Hz \]
+
+Os intervalos podem ainda ser ilustrados sobre a curva de densidade de
+probabilidade das distribuições de frequências:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{plotIC}\PY{p}{(}\PY{n}{mean}\PY{p}{,} \PY{n}{std}\PY{p}{,} \PY{n}{err}\PY{p}{)}\PY{p}{:}
+    \PY{n}{limmin} \PY{o}{=} \PY{n}{mean} \PY{o}{\PYZhy{}} \PY{n}{k}\PY{o}{*}\PY{n}{std}
+    \PY{n}{limmax} \PY{o}{=} \PY{n}{mean} \PY{o}{+} \PY{n}{k}\PY{o}{*}\PY{n}{std}
+    
+    \PY{n}{ea}     \PY{o}{=} \PY{l+m+mi}{0}
+    \PY{n}{colors} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{g}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{pink}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{purple}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+    
+    \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{e} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{err}\PY{p}{)}\PY{p}{:}
+        \PY{n}{fmin}\PY{p}{,} \PY{n}{fmax}\PY{p}{,} \PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{IC}\PY{p}{(}\PY{n}{mean}\PY{p}{,} \PY{n}{std}\PY{p}{,} \PY{n}{e}\PY{p}{)}
+        \PY{n}{xa}  \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{limmin}\PY{p}{,} \PY{n}{fmin}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}
+        \PY{n}{xb}  \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{fmax}\PY{p}{,} \PY{n}{limmax}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}
+        
+        \PY{n}{y1a} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{xa}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+        \PY{n}{y1b} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{xb}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+        
+        \PY{n}{y2a} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{xa}\PY{p}{,} \PY{n}{mean}\PY{p}{,} \PY{n}{std}\PY{p}{)}
+        \PY{n}{y2b} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{norm}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{xb}\PY{p}{,} \PY{n}{mean}\PY{p}{,} \PY{n}{std}\PY{p}{)}
+        
+        \PY{n}{pl}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{xa}\PY{p}{,} \PY{n}{y1a}\PY{p}{,} \PY{n}{y2a}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{n}{colors}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Conf. de }\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{ea}\PY{l+s+si}{:}\PY{l+s+s1}{.2\PYZpc{}}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ à }\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{\PYZhy{}}\PY{n}{e}\PY{l+s+si}{:}\PY{l+s+s1}{.2\PYZpc{}}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{pl}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{xb}\PY{p}{,} \PY{n}{y1b}\PY{p}{,} \PY{n}{y2b}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{n}{colors}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{k+kc}{None}\PY{p}{)}
+        
+        \PY{n}{limmin} \PY{o}{=} \PY{n}{fmin}
+        \PY{n}{limmax} \PY{o}{=} \PY{n}{fmax}
+        \PY{n}{ea}     \PY{o}{=} \PY{n}{e}
+        
+
+\PY{n}{figHists} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{pl} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Primeira Frequência}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x1}\PY{p}{,} \PY{n}{rv\PYZus{}f1}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x1}\PY{p}{)}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{FDP}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plotIC}\PY{p}{(}\PY{n}{mean\PYZus{}f1}\PY{p}{,} \PY{n}{std\PYZus{}f1}\PY{p}{,} \PY{n}{err}\PY{o}{=}\PY{p}{[}\PY{l+m+mf}{0.025}\PY{p}{,} \PY{l+m+mf}{0.050}\PY{p}{,} \PY{l+m+mf}{0.100}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{False}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{k+kc}{None}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frquência em Hz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{x1}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{x1}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylim}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{ncol}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{upper center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{bbox\PYZus{}to\PYZus{}anchor}\PY{o}{=}\PY{p}{(}\PY{l+m+mf}{1.1}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.2}\PY{p}{)}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{9}\PY{p}{,} \PY{n}{frameon}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+
+\PY{n}{pl} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Segunda Frequência}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x2}\PY{p}{,} \PY{n}{rv\PYZus{}f2}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x2}\PY{p}{)}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{FDP}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plotIC}\PY{p}{(}\PY{n}{mean\PYZus{}f2}\PY{p}{,} \PY{n}{std\PYZus{}f2}\PY{p}{,} \PY{n}{err}\PY{o}{=}\PY{p}{[}\PY{l+m+mf}{0.025}\PY{p}{,} \PY{l+m+mf}{0.050}\PY{p}{,} \PY{l+m+mf}{0.100}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{False}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{k+kc}{None}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frquência em Hz}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{x2}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{x2}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylim}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(0.0, 0.05567011217681224)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trab3a_files/trab3a_27_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{considerauxe7uxf5es-finais}{%
+\section{Considerações finais}\label{considerauxe7uxf5es-finais}}
+
+A consideração das incertezas intrinsecas dos materiais usados na
+construção do modelo reduzido tornou seu comportamento também incerto.
+As incertezas existentes nas propriedades dos materiais foram propagadas
+no modelo através da realização de \(N=5\times10^6\) simulações de Monte
+Carlo e, posteriormente, as \(N\) respostas observadas foram
+caracterizadas através de análises estatísticas. Observou-se que ambas
+as frequências naturais de vibração do modelo reduzido são bem descritas
+por variáveis de distribuição normal/Gaussiana:
+
+\[ f_1 ~\sim ~N(\mu_{f1}=18.67 Hz; \;\; \sigma_{f1}=1.21 Hz)\]
+
+\[ f_2 ~\sim ~N(\mu_{f2}=116.16 Hz; \; \sigma_{f2}=7.52 Hz)\]
+
+onde as médias das variáveis aleatórias são aproximadamente as
+frequências obtidas com as propriedades médias dos materiais.
+
+    Conhecidas as distribuições de probabilidade das frequências naturais
+foram determinados seus intervalos de confiança, onde, com uma confiança
+de 95\%, tem-se que as frequências são:
+
+\[16.30 Hz \le f_1 \le 21.03 Hz\]
+
+\[101.41 Hz \le f_2 \le 130.91 Hz\]
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
