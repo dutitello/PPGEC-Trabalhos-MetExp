@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.18)  4 JAN 2021 16:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.18)  4 JAN 2021 14:48
 entering extended mode
-**./trab3a.tex
-(trab3a.tex
+**./trab3b.tex
+(trab3b.tex
 LaTeX2e <2020-10-01> patch level 2
 L3 programming layer <2020-10-27> xparse <2020-03-03> (article-base.tex
 ("C:\Program Files\MiKTeX\tex/latex/base\article.cls"
@@ -1126,8 +1126,8 @@ File: l3backend-pdftex.def 2020-09-24 L3 backend support: PDF output (pdfTeX)
 \l__kernel_color_stack_int=\count314
 \l__pdf_internal_box=\box83
 )
-(trab3a.aux)
-\openout1 = `trab3a.aux'.
+(trab3b.aux)
+\openout1 = `trab3b.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
 LaTeX Font Info:    ... okay on input line 9.
@@ -1311,167 +1311,92 @@ LaTeX Info: Redefining \ref on input line 9.
 LaTeX Info: Redefining \pageref on input line 9.
 LaTeX Info: Redefining \nameref on input line 9.
 
-(trab3a.out) (trab3a.out)
+(trab3b.out) (trab3b.out)
 \@outlinefile=\write7
-\openout7 = `trab3a.out'.
+\openout7 = `trab3b.out'.
 
 
 Overfull \hbox (30.72894pt too wide) in paragraph at lines 11--12
 [] 
  []
 
-LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 2
-0.
+LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 1
+8.
 ("C:\Program Files\MiKTeX\tex/latex/psnfss\ot1ppl.fd"
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 LaTeX Font Info:    Trying to load font information for OML+zplm on input line 
-20.
+18.
 
 ("C:\Program Files\MiKTeX\tex/latex/psnfss\omlzplm.fd"
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 
-20.
+18.
 
 ("C:\Program Files\MiKTeX\tex/latex/psnfss\omszplm.fd"
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 
-20.
+18.
 
 ("C:\Program Files\MiKTeX\tex/latex/psnfss\omxzplm.fd"
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 
-20.
+18.
 
 ("C:\Program Files\MiKTeX\tex/latex/psnfss\ot1zplm.fd"
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 20.
+(Font)              scaled to size 12.50409pt on input line 18.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 20.
+(Font)              scaled to size 9.37807pt on input line 18.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 7.29405pt on input line 18.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 20.
+(Font)              scaled to size 12.50409pt on input line 18.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 20.
-LaTeX Font Info:    Trying to load font information for U+rsfs on input line 20
+(Font)              scaled to size 9.37807pt on input line 18.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 7.29405pt on input line 18.
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 18
 .
 
 ("C:\Program Files\MiKTeX\tex/latex/jknappen\ursfs.fd"
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-0.
+<../Trabalho3B/Images/ShearBuilding.png, id=39, 526.21594pt x 499.8675pt>
+File: ../Trabalho3B/Images/ShearBuilding.png Graphic file (type png)
+<use ../Trabalho3B/Images/ShearBuilding.png>
+Package pdftex.def Info: ../Trabalho3B/Images/ShearBuilding.png  used on input 
+line 42.
+(pdftex.def)             Requested size: 526.21466pt x 499.86627pt.
+ [1
 
-("C:\Program Files\MiKTeX\tex/latex/base\t1cmtt.fd"
-File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 22.
-LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 
-25.
-
-("C:\Program Files\MiKTeX\tex/latex/base\ts1cmtt.fd"
-File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 12.50409pt on input line 39.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 39.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 39.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 12.50409pt on input line 39.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 39.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 39.
-LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 5
-1.
-
-("C:\Program Files\MiKTeX\tex/latex/psnfss\ts1ppl.fd"
-File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
-) [1
-
-{C:/Users/eduar/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
-Overfull \hbox (7.33331pt too wide) in paragraph at lines 100--101
-[]\T1/ppl/m/n/12 Símbolo|  
- []
-
-[2] [3] [4] [5]
-<trab3a_files/trab3a_18_0.pdf, id=78, 617.65129pt x 387.9826pt>
-File: trab3a_files/trab3a_18_0.pdf Graphic file (type pdf)
-<use trab3a_files/trab3a_18_0.pdf>
-Package pdftex.def Info: trab3a_files/trab3a_18_0.pdf  used on input line 392.
-(pdftex.def)             Requested size: 617.64978pt x 387.98166pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 394--395
-
- []
-
-[6 <./trab3a_files/trab3a_18_0.pdf>] [7]
-<trab3a_files/trab3a_22_0.pdf, id=234, 492.77487pt x 539.65236pt>
-File: trab3a_files/trab3a_22_0.pdf Graphic file (type pdf)
-<use trab3a_files/trab3a_22_0.pdf>
-Package pdftex.def Info: trab3a_files/trab3a_22_0.pdf  used on input line 466.
-(pdftex.def)             Requested size: 492.77367pt x 539.65105pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 468--469
-
- []
-
-[8 <./trab3a_files/trab3a_22_0.pdf>]
-<trab3a_files/trab3a_23_0.pdf, id=739, 491.90337pt x 539.65236pt>
-File: trab3a_files/trab3a_23_0.pdf Graphic file (type pdf)
-<use trab3a_files/trab3a_23_0.pdf>
-Package pdftex.def Info: trab3a_files/trab3a_23_0.pdf  used on input line 494.
-(pdftex.def)             Requested size: 491.90216pt x 539.65105pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 496--497
-
- []
-
-[9 <./trab3a_files/trab3a_23_0.pdf>] [10] [11]
-<trab3a_files/trab3a_27_1.pdf, id=1255, 603.92189pt x 260.28719pt>
-File: trab3a_files/trab3a_27_1.pdf Graphic file (type pdf)
-<use trab3a_files/trab3a_27_1.pdf>
-Package pdftex.def Info: trab3a_files/trab3a_27_1.pdf  used on input line 641.
-(pdftex.def)             Requested size: 603.92041pt x 260.28654pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 643--644
-
- []
-
-[12 <./trab3a_files/trab3a_27_1.pdf>] [13] (trab3a.aux)
-Package rerunfilecheck Info: File `trab3a.out' has not changed.
-(rerunfilecheck)             Checksum: 0FD556A22CCA33084E4B9EF5256D61D0;373.
+{C:/Users/eduar/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2 <../Trabalho
+3B/Images/ShearBuilding.png>] [3] (trab3b.aux)
+Package rerunfilecheck Info: File `trab3b.out' has not changed.
+(rerunfilecheck)             Checksum: 944B341427F13ACBBFDCDCFC97B320CE;421.
  ) 
 Here is how much of TeX's memory you used:
- 23443 strings out of 479799
- 425379 string characters out of 2879598
- 771334 words of memory out of 3000000
- 39882 multiletter control sequences out of 15000+200000
- 565216 words of font info for 108 fonts, out of 3000000 for 9000
+ 23237 strings out of 479799
+ 420994 string characters out of 2879598
+ 713830 words of memory out of 3000000
+ 39720 multiletter control sequences out of 15000+200000
+ 557115 words of font info for 80 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 111i,8n,113p,978b,639s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Program Files/MiKTeX/fonts/enc/dvips/cm-super/cm-super-ts1.enc}{C:/Progra
-m Files/MiKTeX/fonts/enc/dvips/base/8r.enc}{C:/Program Files/MiKTeX/fonts/enc/d
-vips/cm-super/cm-super-t1.enc}<C:/Program Files/MiKTeX/fonts/type1/public/amsfo
-nts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi1
-0.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Pro
-gram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/M
-iKTeX/fonts/type1/public/mathpazo/fplmr.pfb><C:/Program Files/MiKTeX/fonts/type
-1/public/mathpazo/fplmri.pfb><C:/Program Files/MiKTeX/fonts/type1/public/cm-sup
-er/sfit1200.pfb><C:/Program Files/MiKTeX/fonts/type1/public/cm-super/sftt1200.p
-fb><C:/Program Files/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Program Fil
-es/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Program Files/MiKTeX/fonts/ty
-pe1/urw/palatino/uplri8a.pfb>
-Output written on trab3a.pdf (13 pages, 693236 bytes).
+ 111i,6n,113p,552b,407s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files/MiKTeX/fonts/enc/dvips/base/8r.enc}<C:/Program Files/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/mathp
+azo/fplmri.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:
+/Program Files/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Program Files/MiK
+TeX/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on trab3b.pdf (3 pages, 227593 bytes).
 PDF statistics:
- 1398 PDF objects out of 1440 (max. 8388607)
- 34 named destinations out of 1000 (max. 500000)
- 73 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 88 PDF objects out of 1000 (max. 8388607)
+ 14 named destinations out of 1000 (max. 500000)
+ 82 words of extra memory for PDF output out of 10000 (max. 10000000)
 
