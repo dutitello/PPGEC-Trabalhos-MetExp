@@ -25,9 +25,21 @@ A estrutura a ser representada pelo modelo reduzido é um edifício hipotético,
 \end{figure}
 
 
-O modelo reduzido a
+Conforme Soriano (2014), a análise dinâmica de edifícios de múltiplos pavimentos pode ser realizada matematicamente com modelos de diferentes graus de refinamento. Esses modelos costumam ter suas massas concentradas nos pavimentos e podem ser do tipo \textit{shear building} ou tridimensionais.
+
+O modelo \textit{shear building}, clássico e de grande simplicidade, supõe pisos indeformáveis e colunas inextensíveis. Matematicamente esse modelo equivale à uma coluna de trechos de rigidezes iguais à soma das rigidezes à flexão dos pilares de cada pavimento da edificação. No caso de edifícios com dois planos de simetria esse modelo pode ser plano, tendo apenas uma translação horizontal por pavimento (Soriano, 2014). 
+
+Na figura \ref{fig:shearb} é apresentado um modelo plano de \textit{shear building} e o modelo matemático equivalente. 
+
+\begin{figure}
+	\centering
+	\caption{Modelo \textit{shear building}.\\ \small{(Adaptado de Soriano, 2014)}}
+	\includegraphics[scale=0.39]{../Images/ShearBuilding}
+	\label{fig:shearb}
+\end{figure}
 
 
+Dessa forma, visando determinar a primeira frequência de vibração do edifício da figura \ref{fig:edfestudo}, o modelo reduzido construído será um modelo plano de \textit{shear building}. A frequência de vibração será determinada por meio das acelerações medidas no topo do modelo, através dessas também poderá ser determinado o amortecimento do modelo reduzido, para estudos posteriores. 
 
 
 
@@ -49,7 +61,7 @@ O modelo \textit{shear building}, clássico e de grande simplicidade, supõe pis
 	\centering
 	\caption{Modelo de edifício e sua representação como \textit{shear building}.\\ \small{(Adaptado de Soriano, 2014)}}
 	\includegraphics[scale=0.39]{../Images/ShearBuilding}
-	\label{fig:shearb}
+	\label{fig:shearb2}
 \end{figure}
 
 
