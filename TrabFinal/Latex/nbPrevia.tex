@@ -1,0 +1,342 @@
+
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando e configurando módulos}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{o}{\PYZpc{}}\PY{k}{config} InlineBackend.figure\PYZus{}format = \PYZsq{}svg\PYZsq{}
+\PY{k+kn}{import} \PY{n+nn}{jupyter2latex} \PY{k}{as} \PY{n+nn}{j2l}
+\PY{k+kn}{from} \PY{n+nn}{math} \PY{k+kn}{import} \PY{n}{pi}
+\end{Verbatim}
+\end{tcolorbox}
+
+
+
+O projeto do modelo reduzido é baseado na introdução de escalas que
+relacionem grandezas do modelo reduzido e do modelo real, onde o número
+de escalas deve ser menor ou igual ao número de grandezas fundamentais
+envolvidas no problema. Para o problema em questão as grandezas
+fundamentais são três: comprimento (\(L\)), massa (\(M\)) e tempo
+(\(T\)), que formam a base da matriz dimensional. Para construção do
+modelo reduzido as grandezas escolhidas para serem escaladas são
+relativas ao comprimento (\(L\)), à rigidez à flexão (\(EI\)) e à
+aceleração (\(a\)).
+
+    Os fatores de escala adotados para \(L\) e \(EI\) são baseados no
+material empregado para construção das colunas do modelo, essas serão
+formadas por réguas de alumínio, com cerca de \(50 cm\) de comprimento,
+à serem adquiridas e caracterizadas. A distância entre os pavimentos
+será representada por trechos de \(10 cm\), logo, a escala de
+comprimento \(\lambda_L\) será:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{L\PYZus{}pav} \PY{o}{=} \PY{l+m+mi}{10}
+\PY{n}{scale\PYZus{}L} \PY{o}{=} \PY{n}{L\PYZus{}pav}\PY{o}{/}\PY{l+m+mi}{300}
+
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}\PYZdl{} }\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{lambda\PYZus{}L = 1:}\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{scale\PYZus{}L}\PY{l+s+si}{:}\PY{l+s+s2}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ \PYZdl{}\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    $$ \lambda_L = 1:30.00 $$
+
+    
+    A escala da rigidez à flexão \(EI\) relaciona a rigidez de 2 réguas às
+colunas do edifício. Adotando concreto da classe C25 tem-se
+\(E_C=28GPa\), enquanto para a régua em alumínio tem-se \(E_{r}=70GPa\).
+Em relação às geometrias, são estimadas para às reguas larguras de
+\(2.5cm\) e espessuras de \(0.1cm\), enquanto os pilares tem seção
+quadrada de \(25 \times 25cm\); seus momentos de inércia \(I\) são dados
+por \ref{eq:mI}.
+
+\begin{equation}
+\label{eq:mI}
+I = \frac{bh^3}{12}
+\end{equation}
+
+Dessa forma:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Propriedades dos materiais}
+\PY{n}{E\PYZus{}C} \PY{o}{=} \PY{l+m+mf}{28E9}  \PY{c+c1}{\PYZsh{} Concreto}
+\PY{n}{E\PYZus{}r} \PY{o}{=} \PY{l+m+mf}{70E9}  \PY{c+c1}{\PYZsh{} Régua}
+
+\PY{c+c1}{\PYZsh{} Geometria em concreto dos pilares}
+\PY{n}{b\PYZus{}C} \PY{o}{=} \PY{l+m+mf}{0.25}
+\PY{n}{h\PYZus{}C} \PY{o}{=} \PY{l+m+mf}{0.25}
+\PY{n}{I\PYZus{}C} \PY{o}{=} \PY{n}{b\PYZus{}C}\PY{o}{*}\PY{n}{h\PYZus{}C}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{o}{/}\PY{l+m+mi}{12}
+\PY{n}{EI\PYZus{}C} \PY{o}{=} \PY{n}{E\PYZus{}C} \PY{o}{*} \PY{n}{I\PYZus{}C}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{l+s+s1}{\PYZhy{} Momento de inércia de um pilar em concreto: \PYZdl{}}\PY{l+s+si}{\PYZob{}}\PY{n}{I\PYZus{}C}\PY{l+s+si}{=:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{: m\PYZca{}4\PYZdl{}. }
+
+\PY{l+s+s1}{\PYZhy{} Rigidez à flexão do pilar em concreto: \PYZdl{}}\PY{l+s+si}{\PYZob{}}\PY{n}{EI\PYZus{}C}\PY{l+s+si}{=:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Nm\PYZca{}2\PYZdl{}}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Geometria da régua}
+\PY{n}{b\PYZus{}r} \PY{o}{=} \PY{l+m+mf}{0.025}
+\PY{n}{h\PYZus{}r} \PY{o}{=} \PY{l+m+mf}{0.001}
+\PY{n}{I\PYZus{}r} \PY{o}{=} \PY{n}{b\PYZus{}r}\PY{o}{*}\PY{n}{h\PYZus{}r}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{o}{/}\PY{l+m+mi}{12}
+\PY{n}{EI\PYZus{}r} \PY{o}{=} \PY{n}{E\PYZus{}r} \PY{o}{*} \PY{n}{I\PYZus{}r} 
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{l+s+s1}{\PYZhy{} Momento de inércia de uma regua em alumínio: \PYZdl{}}\PY{l+s+si}{\PYZob{}}\PY{n}{I\PYZus{}r}\PY{l+s+si}{=:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{: m\PYZca{}4\PYZdl{}. }
+
+\PY{l+s+s1}{\PYZhy{} Rigidez à flexão da régua em alumínio: \PYZdl{}}\PY{l+s+si}{\PYZob{}}\PY{n}{EI\PYZus{}r}\PY{l+s+si}{=:}\PY{l+s+s1}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ Nm\PYZca{}2\PYZdl{}}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    - Momento de inércia de um pilar em concreto: $I_C=3.255E-04 \: m^4$. 
+
+- Rigidez à flexão do pilar em concreto: $EI_C=9.115E+06 Nm^2$
+
+    
+    - Momento de inércia de uma regua em alumínio: $I_r=2.083E-12 \: m^4$. 
+
+- Rigidez à flexão da régua em alumínio: $EI_r=1.458E-01 Nm^2$
+
+    
+    Conforme descrito anteriormente o edifício é composto por 9 pilares,
+distribuídos em 3 linhas, enquanto o modelo em escala é composto por
+duas réguas, dessa forma, a escala da rigidez à flexão \(\lambda_{EI}\)
+será:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{scale\PYZus{}EI} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{EI\PYZus{}r}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{l+m+mi}{9}\PY{o}{*}\PY{n}{EI\PYZus{}C}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}\PYZdl{} }\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{lambda\PYZus{}}\PY{l+s+si}{\PYZob{}EI\PYZcb{}}\PY{l+s+s2}{ =}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{1:}\PY{l+s+si}{\PYZob{}}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{scale\PYZus{}EI}\PY{l+s+si}{:}\PY{l+s+s2}{.3E}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdl{}\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    $$ \lambda_{EI} =1:2.812E+08$$
+
+    
+    Em relação à escala de acelerações (\(a\)) optou-se inicialmente por
+manter a proporção \(\lambda_a=1:1\). Todavia, visto que o problema de
+vibração livre é independente da aceleração da gravidade essa poderá ser
+alterada de forma a facilitar a construção do modelo.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{scale\PYZus{}a} \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{l+m+mi}{1}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Em posse das escalas impostas, para construção do modelo reduzido e
+realização da análise devem ser conhecidas as escalas derivadas
+necessárias, que são obtidas através de uma análise dimensional, onde a
+base da nova matriz dimensional será formada pelas grandezas \(L\),
+\(EI\) e \(a\). Fazendo uso da metodologia implementada por Rocha
+(2020), a base da matriz dimensional é alterada para a base \(L\),
+\(EI\) e \(a\):
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando DimData }
+\PY{n}{DimData} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}excel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../Resources/DimData.xlsx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{index\PYZus{}col}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{sheet\PYZus{}name}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DimData}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Grandezas fundamentais originais }
+\PY{n}{LMT} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} Novas base de grandezas}
+\PY{n}{ABC} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{L}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{EI}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{a}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} 
+
+\PY{c+c1}{\PYZsh{} Importa matriz dimensional de ABC na base LMT}
+\PY{n}{base} \PY{o}{=} \PY{n}{DimData}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{ABC}\PY{p}{,} \PY{n}{LMT}\PY{p}{]}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{base}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{ na base }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{ABC}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{LMT}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Inverte base de unidades de LMT para ABC}
+\PY{n}{base\PYZus{}i} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{linalg}\PY{o}{.}\PY{n}{inv}\PY{p}{(}\PY{n}{base}\PY{p}{)}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{n}{LMT}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{n}{ABC}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{base\PYZus{}i}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{ na base }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{LMT}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{ABC}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[H]
+    \centering
+    \caption{L,EI,a na base L,M,T}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &  L &  M &  T \\
+\midrule
+L  &  1 &  0 &  0 \\
+EI &  3 &  1 & -2 \\
+a  &  1 &  0 & -2 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    
+    \begin{table}[H]
+    \centering
+    \caption{L,M,T na base L,EI,a}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &    L &   EI &    a \\
+\midrule
+L &  1.0 &  0.0 &  0.0 \\
+M & -2.0 &  1.0 & -1.0 \\
+T &  0.5 & -0.0 & -0.5 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Para análise do modelo reduzido é necessário o conhecimento da escala de
+massa (\(\lambda_m\)), necessária para determinação das massas dos
+pavimentos, e a escala de frequências (\(\lambda_f\)), que relaciona as
+frequências de vibração do modelo reduzido e da estrutura real. Para a
+determinação da tais fatores essas grandezas devem estar presentes na
+matriz dimensional de base \(L\), \(EI\) e \(a\).
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{par} \PY{o}{=} \PY{n}{ABC} \PY{o}{+} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{npar} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{par}\PY{p}{)}
+
+\PY{n}{DMat\PYZus{}LMT} \PY{o}{=} \PY{n}{DimData}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{par}\PY{p}{,} \PY{n}{LMT}\PY{p}{]}
+\PY{n}{DMat\PYZus{}ABC} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{matmul}\PY{p}{(}\PY{n}{DMat\PYZus{}LMT}\PY{p}{,} \PY{n}{base\PYZus{}i}\PY{p}{)}
+\PY{n}{DMat\PYZus{}ABC}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{n+nb}{zip}\PY{p}{(}\PY{n}{LMT}\PY{p}{,} \PY{n}{ABC}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)} \PY{c+c1}{\PYZsh{} Renomeia colunas para nova base}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{DMat\PYZus{}ABC}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Matriz \PYZdl{}D\PYZdl{}  na base }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{ABC}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[H]
+    \centering
+    \caption{Matriz $D$  na base L,EI,a}
+    {\begin{tabular}{lrrr}
+\toprule
+{} &    L &   EI &    a \\
+\midrule
+L  &  1.0 &  0.0 &  0.0 \\
+EI &  0.0 &  1.0 &  0.0 \\
+a  &  0.0 &  0.0 &  1.0 \\
+m  & -2.0 &  1.0 & -1.0 \\
+f  & -0.5 &  0.0 &  0.5 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Por fim, aplicando sobre a matriz \(\bf{D}\) as escalas impostas tem-se
+a tabela de escalas:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{escalas} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{scale\PYZus{}L}\PY{p}{,} \PY{n}{scale\PYZus{}EI}\PY{p}{,} \PY{n}{scale\PYZus{}a}\PY{p}{]}\PY{p}{)}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{tile}\PY{p}{(}\PY{n}{escalas}\PY{p}{,} \PY{p}{(}\PY{n}{npar}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{prod}\PY{p}{(}\PY{n}{escalas}\PY{o}{*}\PY{o}{*}\PY{n}{DMat\PYZus{}ABC}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{escalas} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{escalas}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{1/λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{1}\PY{o}{/}\PY{n}{escalas}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{n}{par}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{escalas}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Fatores de escala}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}\PYZdq{}\PYZdq{}}\PY{l+s+s2}{Escalas derivadas:}
+
+\PY{l+s+s2}{\PYZhy{} Escala de massa: \PYZdl{}}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{lambda\PYZus{}m = 1:}\PY{l+s+si}{\PYZob{}:.2E\PYZcb{}}\PY{l+s+s2}{\PYZdl{}}
+
+\PY{l+s+s2}{\PYZhy{} Escala de frequências: \PYZdl{}}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{lambda\PYZus{}f = }\PY{l+s+si}{\PYZob{}:.3f\PYZcb{}}\PY{l+s+s2}{:1\PYZdl{}}\PY{l+s+s2}{\PYZdq{}\PYZdq{}\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{1/λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[H]
+    \centering
+    \caption{Fatores de escala}
+    {\begin{tabular}{lrr}
+\toprule
+{} &             λ &           1/λ \\
+\midrule
+L  &  3.333333e-02 &  3.000000e+01 \\
+EI &  3.555556e-09 &  2.812500e+08 \\
+a  &  1.000000e+00 &  1.000000e+00 \\
+m  &  3.200000e-06 &  3.125000e+05 \\
+f  &  5.477226e+00 &  1.825742e-01 \\
+\bottomrule
+\end{tabular}
+}
+    \label{}
+    \end{table}
+    
+
+    
+    Escalas derivadas:
+
+- Escala de massa: $\lambda_m = 1:3.12E+05$
+
+- Escala de frequências: $\lambda_f = 5.477:1$
+
+    
+    Dessa forma a massa dos pavimentos do modelo em escala devem ter
+\(1/312500\) da massa de cada pavimento da estrutura real. Sendo que as
+vigas tem seção \(25\times50 cm\), a laje tem \(h=10cm\) e considerando
+uma carga permanente (alvenarias, revestimentos e etc.) de
+\(300 kg/m^2\) sobre todos os pavimentos, a massa dos pavimentos são:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{M\PYZus{}vigas}   \PY{o}{=} \PY{l+m+mf}{0.25}\PY{o}{*}\PY{l+m+mf}{0.50} \PY{o}{*} \PY{l+m+mi}{10} \PY{o}{*} \PY{l+m+mi}{6} \PY{o}{*} \PY{l+m+mi}{2500}   \PY{c+c1}{\PYZsh{} 6 vigas de 10 metros por pavimento}
+\PY{n}{M\PYZus{}laje}    \PY{o}{=} \PY{l+m+mf}{0.10} \PY{o}{*} \PY{l+m+mi}{10}\PY{o}{*}\PY{l+m+mi}{10} \PY{o}{*} \PY{l+m+mi}{2500}         \PY{c+c1}{\PYZsh{} Laje 10x10 e h=12cm}
+\PY{n}{M\PYZus{}cargas}  \PY{o}{=} \PY{l+m+mi}{300} \PY{o}{*} \PY{l+m+mi}{10}\PY{o}{*}\PY{l+m+mi}{10}                 \PY{c+c1}{\PYZsh{} carga de 300 kg/m²}
+\PY{n}{M\PYZus{}pilares} \PY{o}{=} \PY{l+m+mf}{0.25}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{l+m+mi}{3} \PY{o}{*} \PY{l+m+mi}{2500} \PY{o}{*} \PY{l+m+mi}{9}      \PY{c+c1}{\PYZsh{} 9 pilares de 3m por pavimento (1.5m apenas no pav superior)}
+
+\PY{n}{M\PYZus{}pavtipo} \PY{o}{=} \PY{n}{M\PYZus{}vigas} \PY{o}{+} \PY{n}{M\PYZus{}laje} \PY{o}{+} \PY{n}{M\PYZus{}cargas} \PY{o}{+} \PY{n}{M\PYZus{}pilares}
+\PY{n}{M\PYZus{}pavcob}  \PY{o}{=} \PY{n}{M\PYZus{}vigas} \PY{o}{+} \PY{n}{M\PYZus{}laje} \PY{o}{+} \PY{n}{M\PYZus{}cargas} \PY{o}{+} \PY{n}{M\PYZus{}pilares}\PY{o}{/}\PY{l+m+mi}{2}
+
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}\PYZdq{}\PYZdq{}}\PY{l+s+s2}{Massas da estrutura:}
+
+\PY{l+s+s2}{\PYZhy{} Massa dos pavimentos tipo: }\PY{l+s+si}{\PYZob{}:.1f\PYZcb{}}
+
+\PY{l+s+s2}{\PYZhy{} Massa do pavimento de cobertura }\PY{l+s+si}{\PYZob{}:.1f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}\PYZdq{}\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{M\PYZus{}pavtipo}\PY{p}{,} \PY{n}{M\PYZus{}pavcob}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Massas da estrutura:
+
+- Massa dos pavimentos tipo: 77968.8
+
+- Massa do pavimento de cobertura 75859.4
+
+    
+    Logo as massas dos pavimentos do modelo em escala deverão ser:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+s2}{Massas do modelo em escala:}
+
+\PY{l+s+s2}{\PYZhy{} Massa dos pavimentos tipo: }\PY{l+s+si}{\PYZob{}:.3f\PYZcb{}}
+
+\PY{l+s+s2}{\PYZhy{} Massa do pavimento de cobertura }\PY{l+s+si}{\PYZob{}:.3f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}\PYZdq{}\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{M\PYZus{}pavtipo}\PY{o}{*}\PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{M\PYZus{}pavcob}\PY{o}{*}\PY{n}{escalas}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{λ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+Massas do modelo em escala:
+
+- Massa dos pavimentos tipo: 0.250
+
+- Massa do pavimento de cobertura 0.243
+
+    
+

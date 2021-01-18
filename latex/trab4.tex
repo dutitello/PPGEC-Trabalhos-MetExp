@@ -1,0 +1,441 @@
+\input{article-base.tex}
+
+\author{Eduardo Pagnussat Titello}
+\title{PEC00144 - Métodos Experimentais em Engenharia Civil}
+\subtitle{Trabalho 4}
+\date{Janeiro de 2021}
+
+
+\begin{document}
+	
+	\maketitle
+
+Este trabalho tem por objetivo:
+
+\begin{itemize}
+\item
+  Definir (simular) um conjunto $n$ de amostras de uma V.A. associada a
+  carga (buscar máximo) ou resistência (buscar mínimo), independentes e
+  com mesma distribuição de origem.
+\item
+  Calcular e graficar as distribuições de máxima (ou mínima) para alguns
+  valores de \(N\) (conforme o significado).
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{o}{\PYZpc{}}\PY{k}{config} InlineBackend.figure\PYZus{}format = \PYZsq{}svg\PYZsq{}
+\PY{k+kn}{import} \PY{n+nn}{jupyter2latex} \PY{k}{as} \PY{n+nn}{j2l}
+\PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k+kn}{import} \PY{n}{pi}
+\PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{as} \PY{n+nn}{st}
+\PY{k+kn}{import} \PY{n+nn}{requests}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{conjunto-de-dados-adotados}{%
+\section{Conjunto de dados adotados}\label{conjunto-de-dados-adotados}}
+
+Para realização desse trabalho são adotados dados pluviométricos diários
+medidos na estação meteorológica do Jardim Botânico de Porto Alegre. O
+período de aquisição dos dados é de 01/01/1970 à 31/12/2020. Observa-se
+que os dados contabilizam todas as chuvas ocorridas durante o dia, não
+sendo adequados para alguns tipos de projeto.
+
+Os dados em questão são obtidos do Instituto Nacional de Meteorologia
+(INMET) através de uma API publica, conforme:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Intervalo de dados:}
+\PY{n}{ano\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1970}
+\PY{n}{ano\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{2020}
+
+\PY{c+c1}{\PYZsh{} API do INMET}
+\PY{n}{dados\PYZus{}api} \PY{o}{=} \PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{https://apitempo.inmet.gov.br/estacao/diaria/}\PY{l+s+si}{\PYZob{}}\PY{n}{ano\PYZus{}i}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZhy{}01\PYZhy{}01/}\PY{l+s+si}{\PYZob{}}\PY{n}{ano\PYZus{}f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZhy{}12\PYZhy{}31/83967}\PY{l+s+s1}{\PYZsq{}}
+\PY{c+c1}{\PYZsh{} Copia local}
+\PY{n}{dados\PYZus{}local} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{./dados.json}\PY{l+s+s1}{\PYZsq{}}
+
+\PY{c+c1}{\PYZsh{} Capturando dados da estação de porto alegre de 1970 à 2020}
+\PY{k}{if} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{isfile}\PY{p}{(}\PY{n}{dados\PYZus{}local}\PY{p}{)}\PY{p}{:} 
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Usando dados locais}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{dados\PYZus{}origem} \PY{o}{=} \PY{n}{dados\PYZus{}local}
+\PY{k}{else}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Usando dados da API}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{dados\PYZus{}origem} \PY{o}{=} \PY{n}{requests}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{n}{dados\PYZus{}api}\PY{p}{)}\PY{o}{.}\PY{n}{text}
+    \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{n}{dados\PYZus{}local}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{f}\PY{p}{:}
+        \PY{n}{f}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{n}{dados\PYZus{}origem}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dados salvos localmente}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{dados} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}json}\PY{p}{(}\PY{n}{dados\PYZus{}origem}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Ajustando indice para data de medição e configurando como data}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{dados}\PY{p}{[}\PY{p}{:}\PY{l+m+mi}{7}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tab:cabdados}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{caption}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Cabeçalho dos dados brutos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Usando dados locais
+    \end{Verbatim}
+
+    
+    \begin{table}[H]
+    \centering
+    \caption{Cabeçalho dos dados brutos}
+    \begin{adjustbox}{width=\columnwidth,center}
+    {\begin{tabular}{lrrlllrrrrrrr}
+\toprule
+{} &  TEMP\_MAX &  UMID\_MED &  UF &  DT\_MEDICAO &       DC\_NOME &  TEMP\_MED &  CHUVA &  INSOLACAO &  CD\_ESTACAO &  VL\_LATITUDE &  VL\_LONGITUDE &  TEMP\_MIN \\
+\midrule
+0 &      28.9 &     83.50 &  RS &  1970-01-01 &  PORTO ALEGRE &     24.50 &   17.2 &        2.2 &       83967 &   -30.053611 &    -51.174722 &      22.0 \\
+1 &      31.4 &     73.00 &  RS &  1970-01-02 &  PORTO ALEGRE &     26.76 &    0.0 &        8.8 &       83967 &   -30.053611 &    -51.174722 &      22.4 \\
+2 &      35.0 &     70.50 &  RS &  1970-01-03 &  PORTO ALEGRE &     27.32 &    0.0 &       10.5 &       83967 &   -30.053611 &    -51.174722 &      22.8 \\
+3 &      31.6 &     78.00 &  RS &  1970-01-04 &  PORTO ALEGRE &     27.52 &    0.4 &        4.0 &       83967 &   -30.053611 &    -51.174722 &      23.8 \\
+4 &      34.1 &     75.75 &  RS &  1970-01-05 &  PORTO ALEGRE &     27.66 &    0.0 &        9.2 &       83967 &   -30.053611 &    -51.174722 &      23.4 \\
+5 &      34.3 &     83.00 &  RS &  1970-01-06 &  PORTO ALEGRE &     27.98 &    0.0 &        6.8 &       83967 &   -30.053611 &    -51.174722 &      23.6 \\
+6 &      30.2 &     79.25 &  RS &  1970-01-07 &  PORTO ALEGRE &     25.88 &    1.3 &        6.5 &       83967 &   -30.053611 &    -51.174722 &      24.0 \\
+\bottomrule
+\end{tabular}
+}
+	\end{adjustbox}
+    \label{tab:cabdados}
+    \end{table}
+    
+
+    
+    Na tabela \ref{tab:cabdados} observa-se a presença de diversas
+informações meteorológicas sobre cada dia, além de informações sobre a
+estação. Para realização do trabalho são mantidas apenas os anos, meses
+e volumes diários de chuvas. Agrupando os dados por ano pode ser
+determinada para cada ano sua máxima precipitação diária, os valores
+para os últimos 5 anos são apresentados na tabela \ref{tab:ultmax},
+enquanto todas as máximas podem ser encontradas no final do trabalho na
+tabela \ref{tab:todasmax}.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} FIltrando apenas datas e chuvas}
+\PY{n}{datas} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DatetimeIndex}\PY{p}{(}\PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DT\PYZus{}MEDICAO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{n}{chuvas} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{)}
+\PY{n}{chuvas}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ANO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{datas}\PY{o}{.}\PY{n}{year}
+\PY{n}{chuvas}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MES}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{datas}\PY{o}{.}\PY{n}{month}
+\PY{n}{chuvas}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{dados}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{chuvas}\PY{o}{.}\PY{n}{set\PYZus{}index}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ANO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MES}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{chuvas}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Apaga da memoria já que não vou mais precisar}
+\PY{n}{dados} \PY{o}{=} \PY{k+kc}{None}
+
+\PY{c+c1}{\PYZsh{} Captura máximos anuais (poderia ser mensal com by=[\PYZsq{}ANO\PYZsq{},\PYZsq{}MES\PYZsq{}])}
+\PY{n}{chuvas\PYZus{}agr} \PY{o}{=} \PY{n}{chuvas}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ANO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{chuvas\PYZus{}max} \PY{o}{=} \PY{n}{chuvas\PYZus{}agr}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5}\PY{p}{:}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tab:ultmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{caption}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máximas dos últimos 5 anos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{table}[H]
+    \centering
+    \caption{Máximas dos últimos 5 anos}
+    {\begin{tabular}{lr}
+\toprule
+{} &  CHUVA \\
+ANO  &        \\
+\midrule
+2016 &   73.6 \\
+2017 &   90.6 \\
+2018 &   50.7 \\
+2019 &   79.4 \\
+2020 &  109.9 \\
+\bottomrule
+\end{tabular}
+}
+    \label{tab:ultmax}
+    \end{table}
+    
+
+    
+    \hypertarget{anuxe1lise-estatuxedstica-dos-dados}{%
+\section{Análise estatística dos
+dados}\label{anuxe1lise-estatuxedstica-dos-dados}}
+
+
+Plotando as máximas precipitações diárias anuais em forma de histograma é observada uma tendência ao formato de distribuição de valores extremos para máximos, o que é esperado visto que apenas valores de máximo estão sendo considerados. 
+
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hist}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máxima precipitação diária por ano [mm]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Text(0.5, 0, 'Máxima precipitação diária por ano [mm]')
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab4_files/../latex/trab4_8_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Ajustando aos dados distribuições de extremos de Gumbel e Frechét para
+máximos, observa-se que plotando as PDFs e CDFs sobre os histogramas a
+que apresenta melhor ajuste é a distribuição de Gumbel.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{16}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Ajusta distribuição de Gumbel para máximo}
+\PY{n}{gumb\PYZus{}loc}\PY{p}{,} \PY{n}{gumb\PYZus{}scl} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{gumbel\PYZus{}r}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{d\PYZus{}gumbel} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{gumbel\PYZus{}r}\PY{p}{(}\PY{n}{gumb\PYZus{}loc}\PY{p}{,} \PY{n}{gumb\PYZus{}scl}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Ajusta distribuição de Frechet para máximo}
+\PY{n}{frec\PYZus{}c}\PY{p}{,} \PY{n}{frec\PYZus{}loc}\PY{p}{,} \PY{n}{frec\PYZus{}scl} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{invweibull}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{d\PYZus{}frechet} \PY{o}{=} \PY{n}{st}\PY{o}{.}\PY{n}{invweibull}\PY{p}{(}\PY{n}{frec\PYZus{}c}\PY{p}{,} \PY{n}{frec\PYZus{}loc}\PY{p}{,} \PY{n}{frec\PYZus{}scl}\PY{p}{)}
+
+\PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{25}\PY{p}{,} \PY{l+m+mi}{175}\PY{p}{,} \PY{l+m+mi}{300}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{12}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{)}
+
+\PY{n}{pdf} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{PDF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dados}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{d\PYZus{}gumbel}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Gumbel Right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{d\PYZus{}frechet}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}g}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frechet}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máxima precipitação diária por ano [mm]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{upper right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+
+\PY{n}{cdf} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CDF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{density}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{cumulative}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dados}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{d\PYZus{}gumbel}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Gumbel Right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{d\PYZus{}frechet}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}g}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Frechet}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máxima precipitação diária por ano [mm]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab4_files/../latex/trab4_10_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Onde os parâmetros estatísticos dos máximos são:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{media} \PY{o}{=} \PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
+\PY{n}{desvp} \PY{o}{=} \PY{n}{chuvas\PYZus{}max}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CHUVA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
+\PY{n}{coefv} \PY{o}{=} \PY{n}{desvp}\PY{o}{/}\PY{n}{media}
+
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}
+
+\PY{l+s+s1}{\PYZhy{} Média \PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{mu=}\PY{l+s+si}{\PYZob{}}\PY{n}{media}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ mm\PYZdl{}}
+
+\PY{l+s+s1}{\PYZhy{} Desvio padrão \PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{sigma=}\PY{l+s+si}{\PYZob{}}\PY{n}{desvp}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ mm\PYZdl{}}
+
+\PY{l+s+s1}{\PYZhy{} Coeficiente de variação \PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{delta=}\PY{l+s+si}{\PYZob{}}\PY{n}{coefv}\PY{l+s+si}{:}\PY{l+s+s1}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZdl{}}
+
+\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+
+- Média $\mu=80.51 mm$
+
+- Desvio padrão $\sigma=22.02 mm$
+
+- Coeficiente de variação $\delta=0.274$
+
+
+
+    
+    \hypertarget{construuxe7uxe3o-das-distribuiuxe7uxf5es-de-valores-extremos}{%
+\section{Construção das distribuições de valores
+extremos}\label{construuxe7uxe3o-das-distribuiuxe7uxf5es-de-valores-extremos}}
+
+Conhecida a distribuição dos dados podem ser construídas as respectivas
+distribuições de valores extremos para diferentes valores de \(N\), onde
+\(N\) é o periodo de retorno em anos.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{class} \PY{n+nc}{Xtreme\PYZus{}NN}\PY{p}{(}\PY{n}{st}\PY{o}{.}\PY{n}{rv\PYZus{}continuous}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{N}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{N} \PY{o}{=} \PY{n}{N}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{X} \PY{o}{=} \PY{n}{X}
+        \PY{n}{st}\PY{o}{.}\PY{n}{rv\PYZus{}continuous}\PY{o}{.}\PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}
+
+    \PY{k}{def} \PY{n+nf}{\PYZus{}cdf}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{x}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{X}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{N}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{25}\PY{p}{,} \PY{l+m+mi}{250}\PY{p}{,} \PY{l+m+mi}{400}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{pdf} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{cdf} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}
+
+\PY{n}{pdf}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{PDF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CDF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máxima precipitação diária [mm]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máxima precipitação diária [mm]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Para:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{k}{for} \PY{n}{N} \PY{o+ow}{in} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{]}\PY{p}{:}
+    \PY{n}{pdf}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{Xtreme\PYZus{}NN}\PY{p}{(}\PY{n}{d\PYZus{}gumbel}\PY{p}{,} \PY{n}{N}\PY{p}{)}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{N}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ anos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{cdf}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{Xtreme\PYZus{}NN}\PY{p}{(}\PY{n}{d\PYZus{}gumbel}\PY{p}{,} \PY{n}{N}\PY{p}{)}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{N}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{ anos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+    \PY{n}{mu}\PY{p}{,} \PY{n}{sig} \PY{o}{=} \PY{n}{Xtreme\PYZus{}NN}\PY{p}{(}\PY{n}{d\PYZus{}gumbel}\PY{p}{,} \PY{n}{N}\PY{p}{)}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{Xtreme\PYZus{}NN}\PY{p}{(}\PY{n}{d\PYZus{}gumbel}\PY{p}{,} \PY{n}{N}\PY{p}{)}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
+    \PY{n}{j2l}\PY{o}{.}\PY{n}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{} \PYZdl{}N=}\PY{l+s+si}{\PYZob{}}\PY{n}{N}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZdl{} \PYZdl{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s1}{rightarrow\PYZdl{} \PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{mu=}\PY{l+s+si}{\PYZob{}}\PY{n}{mu}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{mm\PYZdl{} e \PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{sigma=}\PY{l+s+si}{\PYZob{}}\PY{n}{sig}\PY{l+s+si}{:}\PY{l+s+s1}{.2f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{mm\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{cdf}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lower right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{pdf}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+\PY{n}{cdf}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Para:
+
+    
+    - $N=1$ $\rightarrow$ $\mu=80.73mm$ e $\sigma=22.36mm$
+
+    
+    - $N=2$ $\rightarrow$ $\mu=92.82mm$ e $\sigma=22.36mm$
+
+    
+    - $N=5$ $\rightarrow$ $\mu=108.80mm$ e $\sigma=22.36mm$
+
+    
+    - $N=10$ $\rightarrow$ $\mu=120.88mm$ e $\sigma=22.36mm$
+
+    
+    - $N=25$ $\rightarrow$ $\mu=136.86mm$ e $\sigma=22.36mm$
+
+    
+    - $N=50$ $\rightarrow$ $\mu=148.95mm$ e $\sigma=22.36mm$
+
+    
+    - $N=100$ $\rightarrow$ $\mu=161.03mm$ e $\sigma=22.36mm$
+
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab4_files/../latex/trab4_15_8.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Observa-se que quanto maior o período de retorno \(N\) maior a média da
+distribuição, todavia, o valor do desvio padrão é constante dada a
+perpetualidade das distribuições assintóticas de extremos.
+
+    \hypertarget{apuxeandice}{%
+\section{Apêndice}\label{apuxeandice}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{j2l}\PY{o}{.}\PY{n}{df2table}\PY{p}{(}\PY{n}{chuvas\PYZus{}max}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tab:todasmax}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{caption}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Máximas anuais}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+ 
+  
+    \begin{table}[H]
+    \centering
+    \caption{Máximas anuais}
+    {
+    	\begin{tabular}[t]{lr}
+\toprule
+{} &  CHUVA \\
+ANO  &        \\
+\midrule
+1970 &  107.7 \\
+1971 &   55.4 \\
+1972 &   89.4 \\
+1973 &   61.6 \\
+1974 &  135.4 \\
+1975 &   56.3 \\
+1976 &   66.7 \\
+1977 &   81.3 \\
+1978 &   44.4 \\
+1979 &   61.3 \\
+1980 &   89.3 \\
+1981 &  109.5 \\
+1982 &  138.8 \\
+1983 &   92.9 \\
+1984 &   73.3 \\
+1985 &   74.0 \\
+1986 &   82.7 \\
+1987 &   60.8 \\
+1988 &   42.0 \\
+1989 &   57.7 \\
+1990 &   94.5 \\
+1991 &   93.0 \\
+1992 &   78.3 \\
+1993 &   67.8 \\
+1994 &   77.1 \\
+1995 &   70.3 \\
+1996 &   66.1 \\
+1997 &   60.3 \\
+1998 &   56.4 \\
+1999 &   95.1 \\
+\end{tabular}
+\begin{tabular}[t]{lr}
+	\toprule
+	{} &  CHUVA \\
+	ANO  &        \\
+	\midrule
+2000 &   74.7 \\
+2001 &   78.1 \\
+2002 &   81.3 \\
+2003 &   74.1 \\
+2004 &   71.9 \\
+2005 &   84.0 \\
+2006 &   65.1 \\
+2007 &   78.7 \\
+2008 &  149.6 \\
+2009 &   78.8 \\
+2010 &   79.6 \\
+2011 &   77.2 \\
+2012 &   85.4 \\
+2013 &  105.5 \\
+2014 &   95.5 \\
+2015 &   83.1 \\
+2016 &   73.6 \\
+2017 &   90.6 \\
+2018 &   50.7 \\
+2019 &   79.4 \\
+2020 &  109.9 \\
+\bottomrule
+\end{tabular}
+}
+    \label{tab:todasmax}
+    \end{table}
+
+
+    
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
