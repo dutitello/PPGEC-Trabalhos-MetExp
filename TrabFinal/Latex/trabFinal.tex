@@ -17,6 +17,7 @@ determinação da frequência fundamental de vibração da estrutura real a
 partir do modelo reduzido.
 
 \tableofcontents
+
 \pagebreak
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
@@ -46,7 +47,7 @@ concreto C25. Essa e suas dimensões são apresentadas a seguir:
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.7]{../images/Estrutura}
+\includegraphics[scale=0.7]{../images/estrutura}
 \caption{Estrutura}
 \end{figure}
 
@@ -96,7 +97,7 @@ figura a seguir:
 
 \begin{figure}
 \centering
-\includegraphics{../images/reguas.png}
+\includegraphics[scale=0.8]{../images/reguas.png}
 \caption{Réguas}
 \end{figure}
 
@@ -441,8 +442,9 @@ A massa média/aproximada dos elementos empregados no modelo são:
   \end{itemize}
 \end{itemize}
 
-    \hypertarget{determinauxe7uxe3o-teuxf3rica-das-frequuxeancias-devibrauxe7uxe3o}{%
-\section{Determinação teórica das frequências de vibração}\label{determinauxe7uxe3o-teuxf3rica-das-frequuxeancias-devibrauxe7uxe3o}}
+    \hypertarget{determinauxe7uxe3o-teuxf3rica-das-frequuxeancias-de-vibrauxe7uxe3o}{%
+\section{Determinação teórica das frequências de
+vibração}\label{determinauxe7uxe3o-teuxf3rica-das-frequuxeancias-de-vibrauxe7uxe3o}}
 
 As frequências na qual o modelo deve vibrar podem ser obtidas
 matematicamente, para isso as matrizes de rigidez e de massa do modelo
@@ -681,9 +683,9 @@ Text(0.5, 0, '\$f\_1\$')
     Logo a primeira frequência \(f_1\) pode ser representada por uma
 distribuição normal.
 
-    \hypertarget{instrumentauxe7uxe3o-e-anuxe1lise-do-sinal}{%
-\section{Instrumentação e análise do
-sinal}\label{instrumentauxe7uxe3o-e-anuxe1lise-do-sinal}}
+    \hypertarget{leitura-e-anuxe1lise-do-sinal}{%
+\section{Leitura e análise do
+sinal}\label{leitura-e-anuxe1lise-do-sinal}}
 
 Para leitura e processamento das acelerações são utilizados um Arduino
 Uno, um acelerômetro MPU6050 e os códigos desenvolvidos por Rocha
@@ -757,56 +759,11 @@ em um registro. Conforme:
 \end{Verbatim}
 \end{tcolorbox}
 
-    Foram realizadas 3 medições excitando o primeiro modo e 1 excitando
-todos os modos, todas através de impulsos laterais.
-
-Plotando no tempo as acelerações e o periodograma dos 3 eixos da
-primeira medição tem-se:
-
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{19}{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{med} \PY{o}{=} \PY{n}{Acelr}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{arq}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{med11ok}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-Lendo dados anteriores de `registros\textbackslash{}med11ok.xlsx`.
-    \end{Verbatim}
-
-    
-
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{20}{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{med11} \PY{o}{=} \PY{n}{med}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-\PY{n}{med11}\PY{o}{.}\PY{n}{plot\PYZus{}time}\PY{p}{(}\PY{n}{fig}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
-\PY{n}{med11}\PY{o}{.}\PY{n}{plot\PYZus{}freq}\PY{p}{(}\PY{n}{fig}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{)}\PY{p}{,} \PY{n}{axis\PYZus{}f}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{50}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
-\prompt{Out}{outcolor}{20}{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-[[<matplotlib.lines.Line2D at 0x28cf5c097f0>],
- [<matplotlib.lines.Line2D at 0x28cf5c36fd0>],
- [<matplotlib.lines.Line2D at 0x28cf5c707f0>]]
-\end{Verbatim}
-\end{tcolorbox}
-        
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_40_1.pdf}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_40_2.pdf}
-    \end{center}
-    { \hspace*{\fill} \\}
-    
-    Observa-se que foram medidas acelerações nos eixos Y e Z, todavia de
-pequenas intensidades e sem energia aparente na escala adotada, assim,
-para realização das análises dos resultados apenas o eixo X é empregado.
+    Ao total foram realizadas 3 medições excitando o primeiro modo e 1
+excitando todos os modos, todas através de impulsos laterais. Visto que
+movimento esperado do modelo está alinhado com o eixo X do acelerômetro
+as medições nas outras direção foram removidas da etapa de processamento
+de dados.
 
     \hypertarget{excitauxe7uxe3o-do-primeiro-modo}{%
 \subsection{Excitação do primeiro
@@ -856,17 +813,17 @@ Lendo dados anteriores de `registros\textbackslash{}med13ok.xlsx`.
 \end{tcolorbox}
         
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_44_1.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_40_1.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_44_2.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_40_2.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_44_3.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_40_3.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
@@ -889,17 +846,17 @@ Lendo dados anteriores de `registros\textbackslash{}med13ok.xlsx`.
 \end{tcolorbox}
         
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_46_1.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_42_1.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_46_2.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_42_2.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_46_3.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_42_3.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
@@ -922,17 +879,17 @@ Lendo dados anteriores de `registros\textbackslash{}med13ok.xlsx`.
 \end{tcolorbox}
         
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_48_1.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_44_1.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_48_2.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_44_2.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_48_3.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_44_3.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
@@ -990,12 +947,12 @@ Lendo dados anteriores de `registros\textbackslash{}med22ok.xlsx`.
 \end{tcolorbox}
         
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_52_2.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_48_2.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_52_3.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_48_3.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
@@ -1021,17 +978,17 @@ Ampliando a região dos picos tem-se:
 \end{tcolorbox}
         
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_54_1.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_50_1.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_54_2.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_50_2.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     
     \begin{center}
-    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_54_3.pdf}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{trabFinal_files/trabFinal_50_3.pdf}
     \end{center}
     { \hspace*{\fill} \\}
     

@@ -7,5 +7,14 @@
 
 
 \begin{document}
-	
+
 \maketitle
+
+Este trabalho consiste em projetar, construir e instrumentar um modelo
+reduzido. A estrutura adotada é uma torre de 3 pavimentos/níveis,
+representada por um \emph{shear building}, e tem-se como objetivo a
+determinação da frequência fundamental de vibração da estrutura real a
+partir do modelo reduzido.
+
+\tableofcontents
+\pagebreak

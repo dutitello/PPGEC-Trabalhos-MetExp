@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.18)  22 FEB 2021 12:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.18)  22 FEB 2021 13:39
 entering extended mode
 **./trabFinal.tex
 (trabFinal.tex
@@ -1385,100 +1385,109 @@ File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 
 {C:/Users/eduar/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 24.
+(Font)              scaled to size 6.25204pt on input line 25.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 24.
+(Font)              scaled to size 5.21004pt on input line 25.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 6.25204pt on input line 24.
+(Font)              scaled to size 6.25204pt on input line 25.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 24.
+(Font)              scaled to size 5.21004pt on input line 25.
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-4.
+5.
 
 ("C:\Program Files\MiKTeX\tex/latex/base\t1cmtt.fd"
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 26.
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 27.
 LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 
-29.
+30.
 
 ("C:\Program Files\MiKTeX\tex/latex/base\ts1cmtt.fd"
 File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 
-pdfTeX warning: pdflatex.exe (file ../images/Estrutura.pdf): PDF inclusion: fou
+pdfTeX warning: pdflatex.exe (file ../images/estrutura.pdf): PDF inclusion: fou
 nd PDF version <1.7>, but at most version <1.5> allowed
-<../images/Estrutura.pdf, id=65, 258.9675pt x 426.59375pt>
-File: ../images/Estrutura.pdf Graphic file (type pdf)
-<use ../images/Estrutura.pdf>
-Package pdftex.def Info: ../images/Estrutura.pdf  used on input line 49.
+<../images/estrutura.pdf, id=65, 258.9675pt x 426.59375pt>
+File: ../images/estrutura.pdf Graphic file (type pdf)
+<use ../images/estrutura.pdf>
+Package pdftex.def Info: ../images/estrutura.pdf  used on input line 50.
 (pdftex.def)             Requested size: 258.96684pt x 426.5927pt.
-[2 <../images/Estrutura.pdf, page is rotated 270 degrees>]
+[2 <../images/estrutura.pdf, page is rotated 270 degrees>]
 <../images/reguas.png, id=83, 374.90062pt x 190.46156pt>
 File: ../images/reguas.png Graphic file (type png)
 <use ../images/reguas.png>
-Package pdftex.def Info: ../images/reguas.png  used on input line 99.
+Package pdftex.def Info: ../images/reguas.png  used on input line 100.
 (pdftex.def)             Requested size: 374.8997pt x 190.46107pt.
- [3] [4 <../images/reguas.png>] [5]
+ [3 <../images/reguas.png>] [4] [5]
 LaTeX Font Info:    Trying to load font information for LGR+cmtt on input line 
-288.
+289.
  ("C:\Program Files\MiKTeX\tex/latex/cbfonts-fd\lgrcmtt.fd"
 File: lgrcmtt.fd 2017/07/29 v1.2 Greek European Computer Typewriter
 )
-[6]
 LaTeX Font Info:    Trying to load font information for LGR+ppl on input line 3
-05.
-LaTeX Font Info:    No file LGRppl.fd. on input line 305.
+06.
+LaTeX Font Info:    No file LGRppl.fd. on input line 306.
 
 
 LaTeX Font Warning: Font shape `LGR/ppl/m/n' undefined
-(Font)              using `LGR/cmr/m/n' instead on input line 305.
+(Font)              using `LGR/cmr/m/n' instead on input line 306.
 
-[7]
-<../images/colagem.png, id=117, 722.7pt x 542.025pt>
+[6]
+<../images/colagem.png, id=112, 722.7pt x 542.025pt>
 File: ../images/colagem.png Graphic file (type png)
 <use ../images/colagem.png>
-Package pdftex.def Info: ../images/colagem.png  used on input line 394.
+Package pdftex.def Info: ../images/colagem.png  used on input line 395.
 (pdftex.def)             Requested size: 722.69823pt x 542.02367pt.
- [8 <../images/colagem.png>]
+ [7]
 LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 4
-19.
-
-("C:\Program Files\MiKTeX\tex/latex/psnfss\ts1ppl.fd"
+20.
+ ("C:\Program Files\MiKTeX\tex/latex/psnfss\ts1ppl.fd"
 File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
-) [9] [10] [11] [12]
-<trabFinal_files/trabFinal_33_1.pdf, id=145, 612.61722pt x 223.79045pt>
+) [8 <../images/colagem.png>] [9] [10] [11]
+<trabFinal_files/trabFinal_33_1.pdf, id=140, 612.61722pt x 223.79045pt>
 File: trabFinal_files/trabFinal_33_1.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_33_1.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_33_1.pdf  used on input line
- 677.
+ 679.
 (pdftex.def)             Requested size: 612.6157pt x 223.7899pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 679--680
+Underfull \hbox (badness 10000) in paragraph at lines 681--682
 
  []
 
-[13 <./trabFinal_files/trabFinal_33_1.pdf>] [14]
-<trabFinal_files/trabFinal_40_1.pdf, id=284, 616.486pt x 353.87833pt>
+[12 <./trabFinal_files/trabFinal_33_1.pdf>] [13] [14]
+<trabFinal_files/trabFinal_40_1.pdf, id=285, 510.85385pt x 168.50578pt>
 File: trabFinal_files/trabFinal_40_1.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_40_1.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_40_1.pdf  used on input line
- 798.
-(pdftex.def)             Requested size: 616.48448pt x 353.87746pt.
+ 816.
+(pdftex.def)             Requested size: 510.8526pt x 168.50537pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 800--801
+Underfull \hbox (badness 10000) in paragraph at lines 818--819
 
  []
 
-<trabFinal_files/trabFinal_40_2.pdf, id=285, 614.46127pt x 353.87833pt>
+<trabFinal_files/trabFinal_40_2.pdf, id=286, 510.85385pt x 168.50578pt>
 File: trabFinal_files/trabFinal_40_2.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_40_2.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_40_2.pdf  used on input line
- 803.
-(pdftex.def)             Requested size: 614.45976pt x 353.87746pt.
+ 821.
+(pdftex.def)             Requested size: 510.8526pt x 168.50537pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 805--806
+Underfull \hbox (badness 10000) in paragraph at lines 823--824
+
+ []
+
+<trabFinal_files/trabFinal_40_3.pdf, id=287, 510.85385pt x 168.50578pt>
+File: trabFinal_files/trabFinal_40_3.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_40_3.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_40_3.pdf  used on input line
+ 826.
+(pdftex.def)             Requested size: 510.8526pt x 168.50537pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 828--829
 
  []
 
@@ -1487,203 +1496,164 @@ f
 
 pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_40_2.pdf): PDF i
 nclusion: multiple pdfs with page group included in a single page
+> <./trabFinal_files/trabFinal_40_3.pdf
+
+pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_40_3.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
 >]
-<trabFinal_files/trabFinal_44_1.pdf, id=473, 510.85385pt x 168.50578pt>
-File: trabFinal_files/trabFinal_44_1.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_44_1.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_44_1.pdf  used on input line
+<trabFinal_files/trabFinal_42_1.pdf, id=413, 502.44273pt x 168.50578pt>
+File: trabFinal_files/trabFinal_42_1.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_42_1.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_42_1.pdf  used on input line
+ 849.
+(pdftex.def)             Requested size: 502.4415pt x 168.50537pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 851--852
+
+ []
+
+<trabFinal_files/trabFinal_42_2.pdf, id=414, 502.44273pt x 168.50578pt>
+File: trabFinal_files/trabFinal_42_2.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_42_2.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_42_2.pdf  used on input line
+ 854.
+(pdftex.def)             Requested size: 502.4415pt x 168.50537pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 856--857
+
+ []
+
+<trabFinal_files/trabFinal_42_3.pdf, id=415, 502.44273pt x 168.50578pt>
+File: trabFinal_files/trabFinal_42_3.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_42_3.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_42_3.pdf  used on input line
  859.
-(pdftex.def)             Requested size: 510.8526pt x 168.50537pt.
+(pdftex.def)             Requested size: 502.4415pt x 168.50537pt.
 
 Underfull \hbox (badness 10000) in paragraph at lines 861--862
 
  []
 
-<trabFinal_files/trabFinal_44_2.pdf, id=474, 510.85385pt x 168.50578pt>
+[16 <./trabFinal_files/trabFinal_42_1.pdf> <./trabFinal_files/trabFinal_42_2.pd
+f
+
+pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_42_2.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
+> <./trabFinal_files/trabFinal_42_3.pdf
+
+pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_42_3.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
+>]
+<trabFinal_files/trabFinal_44_1.pdf, id=541, 507.23094pt x 168.50578pt>
+File: trabFinal_files/trabFinal_44_1.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_44_1.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_44_1.pdf  used on input line
+ 882.
+(pdftex.def)             Requested size: 507.2297pt x 168.50537pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 884--885
+
+ []
+
+<trabFinal_files/trabFinal_44_2.pdf, id=542, 507.23094pt x 168.50578pt>
 File: trabFinal_files/trabFinal_44_2.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_44_2.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_44_2.pdf  used on input line
- 864.
-(pdftex.def)             Requested size: 510.8526pt x 168.50537pt.
-[16 <./trabFinal_files/trabFinal_44_1.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 866--867
+ 887.
+(pdftex.def)             Requested size: 507.2297pt x 168.50537pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 889--890
 
  []
 
-<trabFinal_files/trabFinal_44_3.pdf, id=521, 510.85385pt x 168.50578pt>
+<trabFinal_files/trabFinal_44_3.pdf, id=543, 507.23094pt x 168.50578pt>
 File: trabFinal_files/trabFinal_44_3.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_44_3.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_44_3.pdf  used on input line
- 869.
-(pdftex.def)             Requested size: 510.8526pt x 168.50537pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 871--872
-
- []
-
-<trabFinal_files/trabFinal_46_1.pdf, id=522, 502.44273pt x 168.50578pt>
-File: trabFinal_files/trabFinal_46_1.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_46_1.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_46_1.pdf  used on input line
  892.
-(pdftex.def)             Requested size: 502.4415pt x 168.50537pt.
+(pdftex.def)             Requested size: 507.2297pt x 168.50537pt.
 
 Underfull \hbox (badness 10000) in paragraph at lines 894--895
 
  []
 
-<trabFinal_files/trabFinal_46_2.pdf, id=523, 502.44273pt x 168.50578pt>
-File: trabFinal_files/trabFinal_46_2.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_46_2.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_46_2.pdf  used on input line
- 897.
-(pdftex.def)             Requested size: 502.4415pt x 168.50537pt.
-[17 <./trabFinal_files/trabFinal_44_2.pdf> <./trabFinal_files/trabFinal_44_3.pd
+[17 <./trabFinal_files/trabFinal_44_1.pdf> <./trabFinal_files/trabFinal_44_2.pd
 f
+
+pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_44_2.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
+> <./trabFinal_files/trabFinal_44_3.pdf
 
 pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_44_3.pdf): PDF i
 nclusion: multiple pdfs with page group included in a single page
-> <./trabFinal_files/trabFinal_46_1.pdf
-
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_46_1.pdf): PDF i
-nclusion: multiple pdfs with page group included in a single page
 >]
-Underfull \hbox (badness 10000) in paragraph at lines 899--900
-
- []
-
-<trabFinal_files/trabFinal_46_3.pdf, id=649, 502.44273pt x 168.50578pt>
-File: trabFinal_files/trabFinal_46_3.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_46_3.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_46_3.pdf  used on input line
- 902.
-(pdftex.def)             Requested size: 502.4415pt x 168.50537pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 904--905
-
- []
-
-<trabFinal_files/trabFinal_48_1.pdf, id=650, 507.23094pt x 168.50578pt>
-File: trabFinal_files/trabFinal_48_1.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_48_1.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_48_1.pdf  used on input line
- 925.
-(pdftex.def)             Requested size: 507.2297pt x 168.50537pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 927--928
-
- []
-
-<trabFinal_files/trabFinal_48_2.pdf, id=651, 507.23094pt x 168.50578pt>
+<trabFinal_files/trabFinal_48_2.pdf, id=687, 632.44876pt x 230.29663pt>
 File: trabFinal_files/trabFinal_48_2.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_48_2.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_48_2.pdf  used on input line
- 930.
-(pdftex.def)             Requested size: 507.2297pt x 168.50537pt.
-[18 <./trabFinal_files/trabFinal_46_2.pdf> <./trabFinal_files/trabFinal_46_3.pd
-f
+ 950.
+(pdftex.def)             Requested size: 632.44722pt x 230.29607pt.
 
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_46_3.pdf): PDF i
-nclusion: multiple pdfs with page group included in a single page
-> <./trabFinal_files/trabFinal_48_1.pdf
-
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_48_1.pdf): PDF i
-nclusion: multiple pdfs with page group included in a single page
->]
-Underfull \hbox (badness 10000) in paragraph at lines 932--933
+Underfull \hbox (badness 10000) in paragraph at lines 952--953
 
  []
 
-<trabFinal_files/trabFinal_48_3.pdf, id=783, 507.23094pt x 168.50578pt>
+<trabFinal_files/trabFinal_48_3.pdf, id=688, 617.65129pt x 230.29663pt>
 File: trabFinal_files/trabFinal_48_3.pdf Graphic file (type pdf)
 <use trabFinal_files/trabFinal_48_3.pdf>
 Package pdftex.def Info: trabFinal_files/trabFinal_48_3.pdf  used on input line
- 935.
-(pdftex.def)             Requested size: 507.2297pt x 168.50537pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 937--938
-
- []
-
-[19 <./trabFinal_files/trabFinal_48_2.pdf> <./trabFinal_files/trabFinal_48_3.pd
-f
-
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_48_3.pdf): PDF i
-nclusion: multiple pdfs with page group included in a single page
->]
-<trabFinal_files/trabFinal_52_2.pdf, id=883, 632.44876pt x 230.29663pt>
-File: trabFinal_files/trabFinal_52_2.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_52_2.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_52_2.pdf  used on input line
- 993.
-(pdftex.def)             Requested size: 632.44722pt x 230.29607pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 995--996
-
- []
-
-<trabFinal_files/trabFinal_52_3.pdf, id=884, 617.65129pt x 230.29663pt>
-File: trabFinal_files/trabFinal_52_3.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_52_3.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_52_3.pdf  used on input line
- 998.
+ 955.
 (pdftex.def)             Requested size: 617.64978pt x 230.29607pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 1000--1001
+[18 <./trabFinal_files/trabFinal_48_2.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 957--958
 
  []
 
-[20 <./trabFinal_files/trabFinal_52_2.pdf> <./trabFinal_files/trabFinal_52_3.pd
+<trabFinal_files/trabFinal_50_1.pdf, id=747, 510.42099pt x 137.61037pt>
+File: trabFinal_files/trabFinal_50_1.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_50_1.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_50_1.pdf  used on input line
+ 981.
+(pdftex.def)             Requested size: 510.41974pt x 137.61002pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 983--984
+
+ []
+
+<trabFinal_files/trabFinal_50_2.pdf, id=748, 510.42099pt x 137.61037pt>
+File: trabFinal_files/trabFinal_50_2.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_50_2.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_50_2.pdf  used on input line
+ 986.
+(pdftex.def)             Requested size: 510.41974pt x 137.61002pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 988--989
+
+ []
+
+<trabFinal_files/trabFinal_50_3.pdf, id=749, 510.42099pt x 137.61037pt>
+File: trabFinal_files/trabFinal_50_3.pdf Graphic file (type pdf)
+<use trabFinal_files/trabFinal_50_3.pdf>
+Package pdftex.def Info: trabFinal_files/trabFinal_50_3.pdf  used on input line
+ 991.
+(pdftex.def)             Requested size: 510.41974pt x 137.61002pt.
+[19 <./trabFinal_files/trabFinal_48_3.pdf> <./trabFinal_files/trabFinal_50_1.pd
 f
 
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_52_3.pdf): PDF i
+pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_50_1.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
+> <./trabFinal_files/trabFinal_50_2.pdf
+
+pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_50_2.pdf): PDF i
 nclusion: multiple pdfs with page group included in a single page
 >]
-<trabFinal_files/trabFinal_54_1.pdf, id=982, 510.42099pt x 137.61037pt>
-File: trabFinal_files/trabFinal_54_1.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_54_1.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_54_1.pdf  used on input line
- 1024.
-(pdftex.def)             Requested size: 510.41974pt x 137.61002pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 1026--1027
+Underfull \hbox (badness 10000) in paragraph at lines 993--994
 
  []
 
-<trabFinal_files/trabFinal_54_2.pdf, id=983, 510.42099pt x 137.61037pt>
-File: trabFinal_files/trabFinal_54_2.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_54_2.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_54_2.pdf  used on input line
- 1029.
-(pdftex.def)             Requested size: 510.41974pt x 137.61002pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 1031--1032
-
- []
-
-<trabFinal_files/trabFinal_54_3.pdf, id=984, 510.42099pt x 137.61037pt>
-File: trabFinal_files/trabFinal_54_3.pdf Graphic file (type pdf)
-<use trabFinal_files/trabFinal_54_3.pdf>
-Package pdftex.def Info: trabFinal_files/trabFinal_54_3.pdf  used on input line
- 1034.
-(pdftex.def)             Requested size: 510.41974pt x 137.61002pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 1036--1037
-
- []
-
-[21 <./trabFinal_files/trabFinal_54_1.pdf> <./trabFinal_files/trabFinal_54_2.pd
-f
-
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_54_2.pdf): PDF i
-nclusion: multiple pdfs with page group included in a single page
-> <./trabFinal_files/trabFinal_54_3.pdf
-
-pdfTeX warning: pdflatex.exe (file ./trabFinal_files/trabFinal_54_3.pdf): PDF i
-nclusion: multiple pdfs with page group included in a single page
->] [22] [23] (trabFinal.aux)
+[20 <./trabFinal_files/trabFinal_50_3.pdf>] [21] (trabFinal.aux)
 Package rerunfilecheck Info: File `trabFinal.out' has not changed.
-(rerunfilecheck)             Checksum: EEDB9D11DE61483B6D59F472A8B08D42;715.
+(rerunfilecheck)             Checksum: 67134B2B21B64FA989C67E4733DF4FC5;702.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
@@ -1693,10 +1663,10 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 23652 strings out of 479799
- 431285 string characters out of 2879598
- 812511 words of memory out of 3000000
- 40043 multiletter control sequences out of 15000+200000
+ 23625 strings out of 479799
+ 430531 string characters out of 2879598
+ 814426 words of memory out of 3000000
+ 40020 multiletter control sequences out of 15000+200000
  571235 words of font info for 116 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  111i,8n,113p,1041b,641s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1712,9 +1682,9 @@ Program Files/MiKTeX/fonts/type1/public/cm-super/sfit1200.pfb><C:/Program Files
 /MiKTeX/fonts/type1/public/cm-super/sftt1200.pfb><C:/Program Files/MiKTeX/fonts
 /type1/urw/palatino/uplb8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/palatin
 o/uplr8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on trabFinal.pdf (23 pages, 2325545 bytes).
+Output written on trabFinal.pdf (21 pages, 2222428 bytes).
 PDF statistics:
- 1177 PDF objects out of 1200 (max. 8388607)
- 54 named destinations out of 1000 (max. 500000)
- 193 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 984 PDF objects out of 1000 (max. 8388607)
+ 52 named destinations out of 1000 (max. 500000)
+ 183 words of extra memory for PDF output out of 10000 (max. 10000000)
 
