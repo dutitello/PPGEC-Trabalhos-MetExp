@@ -1,0 +1,11 @@
+\babel@toc {portuguese}{}
+\contentsline {section}{\numberline {1}Apresentação da estrutura real}{2}{section.1}%
+\contentsline {section}{\numberline {2}Projeto do modelo reduzido}{3}{section.2}%
+\contentsline {section}{\numberline {3}Construção do modelo}{8}{section.3}%
+\contentsline {section}{\numberline {4}Determinação teórica das frequências de vibração}{9}{section.4}%
+\contentsline {section}{\numberline {5}Análise de propagação de erro}{10}{section.5}%
+\contentsline {section}{\numberline {6}Instrumentação e análise do sinal}{13}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Excitação do primeiro modo}{16}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Excitação de todos os modos}{19}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Considerações finais}{22}{section.7}%
+\contentsline {section}{\numberline {8}Referencias}{23}{section.8}%

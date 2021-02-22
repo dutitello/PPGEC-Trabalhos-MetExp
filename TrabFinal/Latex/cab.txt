@@ -1,0 +1,11 @@
+\input{article-base.tex}
+
+\author{Eduardo Pagnussat Titello}
+\title{PEC00144 - Métodos Experimentais em Engenharia Civil}
+\subtitle{Trabalho final}
+\date{Fevereiro de 2021}
+
+
+\begin{document}
+	
+\maketitle
