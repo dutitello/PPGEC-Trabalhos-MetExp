@@ -1,0 +1,284 @@
+\input{article-base.tex}
+
+\author{Eduardo Pagnussat Titello}
+\title{PEC00144 - Métodos Experimentais em Engenharia Civil}
+\subtitle{Trabalho 5}
+\date{Fevereiro de 2021}
+
+\begin{document}
+	
+	\maketitle
+
+Este trabalho tem por objetivo: fazer uma aquisição com o MPU6050 preso
+numa régua em balanço e apresentar resultados no tempo e
+na frequência. Determinar a frequência natural no modo fundamental da
+régua.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Importando e configurando módulos}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{o}{\PYZpc{}}\PY{k}{config} InlineBackend.figure\PYZus{}format = \PYZsq{}svg\PYZsq{} \PYZsh{} Muda backend do jupyter para SVG ;)
+\PY{k+kn}{import} \PY{n+nn}{jupyter2latex} \PY{k}{as} \PY{n+nn}{j2l} \PY{c+c1}{\PYZsh{} Uma maneira que encontrei para tabelas ficarem ok (github.com/dutitello/Jupyter2Latex)}
+\PY{k+kn}{from} \PY{n+nn}{MRPy} \PY{k+kn}{import} \PY{n}{MRPy}
+\PY{k+kn}{import} \PY{n+nn}{serial}
+\PY{k+kn}{import} \PY{n+nn}{time}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{configurauxe7uxe3o-do-experimento}{%
+\section{Configuração do
+experimento}\label{configurauxe7uxe3o-do-experimento}}
+
+No experimento é utilizada uma régua de alumínio com 53 cm de
+comprimento e 2,5 cm de largura, onde o comprimento em balanço é 50 cm.
+A configuração é apresentada na figura a seguir:
+
+\begin{figure}
+\centering
+\includegraphics[width=9cm]{../Trabalho5/imagens/conf1}
+\end{figure}
+
+Os eixos do acelerômetro são posicionados conforme apresentado na figura a seguir:
+
+\begin{figure}
+\centering
+\includegraphics[width=9cm]{../Trabalho5/imagens/PosEixos}
+\end{figure}
+
+    \hypertarget{leitura-e-processamento-das-acelerauxe7uxf5es}{%
+\section{Leitura e processamento das
+acelerações}\label{leitura-e-processamento-das-acelerauxe7uxf5es}}
+
+Para leitura e processamento das acelerações são empregados os códigos
+desenvolvidos por Rocha (2020), onde são introduzidas pequenas
+alterações. Essencialmente os códigos são transformados em uma única
+função onde os dados são lidos, reescalados e reamostrados, fixando o
+\emph{time step}.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{45}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{Acelr}\PY{p}{(}\PY{n}{nlines}\PY{p}{,} \PY{n}{port}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COM3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{baud}\PY{o}{=}\PY{l+m+mi}{115200}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} Inicia conexão}
+    \PY{n}{Ardn}  \PY{o}{=}  \PY{n}{serial}\PY{o}{.}\PY{n}{Serial}\PY{p}{(}\PY{n}{port}\PY{p}{,} \PY{n}{baud}\PY{p}{,} \PY{n}{timeout}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Função que faz leitura }
+    \PY{k}{def} \PY{n+nf}{ReadSerial}\PY{p}{(}\PY{n}{nchar}\PY{p}{,} \PY{n}{nvar}\PY{p}{,} \PY{n}{nlines}\PY{p}{)}\PY{p}{:}
+        \PY{n}{Ardn}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{nlines}\PY{p}{)}\PY{o}{.}\PY{n}{encode}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+        \PY{n}{data} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{nlines}\PY{p}{,}\PY{n}{nvar}\PY{p}{)}\PY{p}{)}
+        \PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{nlines}\PY{p}{)}\PY{p}{:}
+            \PY{n}{wait} \PY{o}{=} \PY{k+kc}{True}
+            \PY{k}{while}\PY{p}{(}\PY{n}{wait}\PY{p}{)}\PY{p}{:}
+                \PY{k}{if} \PY{p}{(}\PY{n}{Ardn}\PY{o}{.}\PY{n}{inWaiting}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{n}{nchar}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{wait} \PY{o}{=} \PY{k+kc}{False}
+                    \PY{n}{bdat} \PY{o}{=} \PY{n}{Ardn}\PY{o}{.}\PY{n}{readline}\PY{p}{(}\PY{p}{)} 
+                    \PY{n}{sdat} \PY{o}{=} \PY{n}{bdat}\PY{o}{.}\PY{n}{decode}\PY{p}{(}\PY{p}{)}
+                    \PY{n}{sdat} \PY{o}{=} \PY{n}{sdat}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{p}{)}
+                    \PY{n}{data}\PY{p}{[}\PY{n}{k}\PY{p}{,} \PY{p}{:}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{sdat}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{n}{nvar}\PY{p}{]}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{int}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{k}{return} \PY{n}{data}
+
+    \PY{c+c1}{\PYZsh{} Precisa deixar tipo 1 segundo para realizar conexão.}
+    \PY{c+c1}{\PYZsh{} No caso aumentei o tempo para facilitar na hora da excitação. }
+    \PY{c+c1}{\PYZsh{} OBS: A luz TX do arduino acende quando a conexão está ligada!}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Wait for it...}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{time}\PY{o}{.}\PY{n}{sleep}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Reading, go!}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+    \PY{k}{try}\PY{p}{:}
+        \PY{n}{data} \PY{o}{=} \PY{n}{ReadSerial}\PY{p}{(}\PY{l+m+mi}{30}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{n}{nlines}\PY{p}{)}
+        \PY{n}{t}    \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0} \PY{p}{]}
+        \PY{n}{acc}  \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}
+
+        \PY{n}{Ardn}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Acquisition ok!}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Ajusta escala dos dados}
+        \PY{n}{ti}  \PY{o}{=} \PY{p}{(}\PY{n}{t} \PY{o}{\PYZhy{}} \PY{n}{t}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{1000}
+        \PY{n}{a}   \PY{o}{=}  \PY{l+m+mi}{2}\PY{o}{*}\PY{l+m+mf}{9.81}\PY{o}{*}\PY{n}{acc}\PY{o}{/}\PY{l+m+mi}{2}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{15}
+        \PY{c+c1}{\PYZsh{} Fixa tamaho do timestep }
+        \PY{n}{data} \PY{o}{=} \PY{n}{MRPy}\PY{o}{.}\PY{n}{resampling}\PY{p}{(}\PY{n}{ti}\PY{p}{,} \PY{n}{a}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Average sampling rate is }\PY{l+s+si}{\PYZob{}0:5.1f\PYZcb{}}\PY{l+s+s1}{Hz.}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{data}\PY{o}{.}\PY{n}{fs}\PY{p}{)}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Entrega dados processados}
+        \PY{k}{return} \PY{n}{data}
+        
+    \PY{k}{except}\PY{p}{:}
+        \PY{n}{Ardn}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+        \PY{n}{sys}\PY{o}{.}\PY{n}{exit}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Acquisition failure!}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Aplicando um deslocamento inicial de 2 cm (além da flecha) na ponta da
+régua, são medidas as acelerações:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{135}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data} \PY{o}{=} \PY{n}{Acelr}\PY{p}{(}\PY{l+m+mi}{15\PYZus{}000}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Wait for it{\ldots}
+Reading, go!
+Acquisition ok!
+Average sampling rate is 349.4Hz.
+    \end{Verbatim}
+
+    Plotando as acelerações (nas 3 direções) pelo tempo tem-se:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{193}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data}\PY{o}{.}\PY{n}{plot\PYZus{}time}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{193}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+[[<matplotlib.lines.Line2D at 0x2b101b25400>],
+ [<matplotlib.lines.Line2D at 0x2b101b51b80>],
+ [<matplotlib.lines.Line2D at 0x2b101b8f340>]]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab5_files/../latex/trab5_8_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Nos segundos iniciais, previamente à excitação, observam-se acelerações
+constantes e diferentes de zero nos três eixos. Essas se devem
+principalmente à inclinação do equipamento na ponta da régua, que
+apresenta uma flecha de cerca de 1 cm apenas com o peso da régua, do
+acelerômetro e do cabo.
+
+A fim de medir apenas acelerações relativas ao movimento dinâmico da
+régua é subtraído de cada eixo seu valor médio, assim:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{191}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{mean} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{acel} \PY{o}{=} \PY{n}{data} \PY{o}{\PYZhy{}} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{mean}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+\PY{n}{acel}\PY{o}{.}\PY{n}{plot\PYZus{}time}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{191}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+[[<matplotlib.lines.Line2D at 0x2b100a560a0>],
+ [<matplotlib.lines.Line2D at 0x2b100a82820>],
+ [<matplotlib.lines.Line2D at 0x2b100ab2fa0>]]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab5_files/../latex/trab5_10_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Desprezando as acelerações no segundo eixo (Y), perpendicular ao plano
+de interesse, o movimento oscilatório da ponta da régua é observado nos
+eixos Z (vertical) e X (axial).
+
+    \hypertarget{determinauxe7uxe3o-da-frequuxeancia-fundamental}{%
+\section{Determinação da frequência
+fundamental}\label{determinauxe7uxe3o-da-frequuxeancia-fundamental}}
+
+Para determinação da frequência fundamental do sistema são plotadas as
+densidades espectrais das acelerações medidas, obtidas pelo
+periodograma:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{194}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{acel}\PY{o}{.}\PY{n}{plot\PYZus{}freq}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{194}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+[[<matplotlib.lines.Line2D at 0x2b101c8a220>],
+ [<matplotlib.lines.Line2D at 0x2b101c23070>],
+ [<matplotlib.lines.Line2D at 0x2b101c7eac0>]]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab5_files/../latex/trab5_13_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Observa-se que apenas um modo de vibração, de frequência de cerca de
+2Hz, foi excitado. Aproximando a região tem-se:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{190}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{acel}\PY{o}{.}\PY{n}{plot\PYZus{}freq}\PY{p}{(}\PY{n}{axis\PYZus{}f}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{25}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{190}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+[[<matplotlib.lines.Line2D at 0x2b100950280>],
+ [<matplotlib.lines.Line2D at 0x2b10097ea30>],
+ [<matplotlib.lines.Line2D at 0x2b1009bb220>]]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab5_files/../latex/trab5_15_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Logo a frequência fundamental é cerca de \textbf{2.6 Hz. }
+
+    \hypertarget{determinauxe7uxe3o-do-deslocamento}{%
+\section{Determinação do
+deslocamento}\label{determinauxe7uxe3o-do-deslocamento}}
+
+Integrando as acelerações medidas duas vezes obtem-se os deslocamentos
+na ponta da régua. Filtrando apenas sinais no intervalo de 1 a 5 Hz
+tem-se:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{banda} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{]}
+\PY{n}{desl} \PY{o}{=} \PY{p}{(}\PY{n}{acel}\PY{o}{.}\PY{n}{integrate}\PY{p}{(}\PY{n}{band}\PY{o}{=}\PY{n}{banda}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{integrate}\PY{p}{(}\PY{n}{band}\PY{o}{=}\PY{n}{banda}\PY{p}{)}
+\PY{n}{desl}\PY{o}{.}\PY{n}{plot\PYZus{}time}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+[[<matplotlib.lines.Line2D at 0x2b17d077550>],
+ [<matplotlib.lines.Line2D at 0x2b17d0a3cd0>],
+ [<matplotlib.lines.Line2D at 0x2b17d0e0490>]]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{../latex/trab5_files/../latex/trab5_18_1.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Observam-se deslocamentos de cerca de 2 cm, conforme o deslocamento
+inicial imposto.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
